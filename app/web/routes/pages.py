@@ -46,11 +46,7 @@ def _slugify(text: str) -> str:
 def index(request: Request):
     if request.session.get("user_id"):
         return RedirectResponse("/dashboard", status_code=302)
-    return templates.TemplateResponse("pages/landing.html", {
-        "request": request,
-        "user": None,
-        "version": settings.app_version,
-    })
+    return RedirectResponse("/login", status_code=302)
 
 
 @router.get("/login", response_class=HTMLResponse)
