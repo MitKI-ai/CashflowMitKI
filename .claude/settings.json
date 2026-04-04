@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(playwright install:*)",
+      "Bash(python -m playwright install chromium)",
+      "Bash(python -m pytest tests/ --ignore=tests/e2e -v --no-header -p no:warnings -q)",
+      "Bash(python -m pytest tests/test_standing_orders.py -v --no-header -p no:warnings)",
+      "Bash(python -m pytest tests/test_direct_debits.py -v --no-header -p no:warnings)",
+      "Bash(python -m pytest tests/test_transfers.py tests/test_standing_orders.py tests/test_direct_debits.py tests/test_accounts.py -v --no-header -p no:warnings)"
+    ]
+  }
+}

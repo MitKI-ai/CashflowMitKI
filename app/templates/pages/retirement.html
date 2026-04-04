@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Renten-Rechner{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <h1 class="text-2xl font-heading font-bold">Renten-Rechner</h1>
+
+    <!-- Profile -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-semibold mb-4">Dein Profil</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div><span class="text-gray-500">Alter:</span> <span class="font-bold">{{ profile.current_age }}</span></div>
+            <div><span class="text-gray-500">Rentenalter:</span> <span class="font-bold">{{ profile.retirement_age }}</span></div>
+            <div><span class="text-gray-500">Lebenserwartung:</span> <span class="font-bold">{{ profile.life_expectancy }}</span></div>
+            <div><span class="text-gray-500">Rendite:</span> <span class="font-bold">{{ profile.expected_return_pct }}%</span></div>
+        </div>
+    </div>
+
+    <!-- Calculation Results -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <p class="text-sm text-gray-500 mb-1">Wunsch-Einkommen</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(profile.desired_monthly_income) }} &euro;/Monat</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <p class="text-sm text-gray-500 mb-1">Gesetzliche Rente</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(profile.expected_pension) }} &euro;/Monat</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <p class="text-sm text-gray-500 mb-1">Monatliche L&uuml;cke</p>
+            <p class="text-2xl font-bold text-red-500">{{ "%.2f"|format(calc.monthly_gap) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <p class="text-sm text-gray-500 mb-1">Ben&ouml;tigtes Kapital</p>
+            <p class="text-2xl font-bold">{{ "%.0f"|format(calc.total_needed) }} &euro;</p>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <p class="text-sm text-gray-500">Jahre bis Rente</p>
+                <p class="text-3xl font-bold text-orange">{{ calc.years_to_retirement }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-500">Aktuelles Erspartes</p>
+                <p class="text-3xl font-bold">{{ "%.0f"|format(calc.current_savings) }} &euro;</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-500">Monatlich sparen</p>
+                <p class="text-3xl font-bold {% if calc.monthly_savings_required > 0 %}text-blue-600{% else %}text-green-600{% endif %}">
+                    {{ "%.0f"|format(calc.monthly_savings_required) }} &euro;
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-xs text-gray-400 text-center">
+        Profil &auml;ndern: <code>PUT /api/v1/retirement/profile</code> &middot;
+        3 Szenarien: <code>GET /api/v1/retirement/scenarios</code>
+    </p>
+</div>
+{% endblock %}

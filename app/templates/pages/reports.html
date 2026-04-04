@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Berichte{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <h1 class="text-2xl font-heading font-bold">Finanzberichte</h1>
+
+    <!-- Month Selector -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+        <h2 class="font-semibold mb-4">Monats-Report</h2>
+        <div class="flex flex-wrap gap-3 items-end">
+            <div>
+                <label class="text-sm text-gray-500 block mb-1">Monat</label>
+                <select id="sel-month" class="border border-gray-200 dark:border-navy rounded-lg px-3 py-2 text-sm bg-white dark:bg-navy-light">
+                    {% for m in range(1, 13) %}
+                    <option value="{{ m }}" {% if m == current_month %}selected{% endif %}>{{ "%02d"|format(m) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="text-sm text-gray-500 block mb-1">Jahr</label>
+                <select id="sel-year" class="border border-gray-200 dark:border-navy rounded-lg px-3 py-2 text-sm bg-white dark:bg-navy-light">
+                    {% for y in range(current_year - 2, current_year + 1) %}
+                    <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button onclick="downloadPdf()" class="bg-orange hover:bg-orange/90 text-white px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                PDF herunterladen
+            </button>
+            <button onclick="sendEmail()" class="border border-gray-200 dark:border-navy hover:bg-gray-50 dark:hover:bg-navy px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Per E-Mail senden
+            </button>
+        </div>
+    </div>
+
+    <!-- Available Reports (last 3 months) -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100 dark:border-navy">
+            <span class="font-medium">Schnellzugriff</span>
+        </div>
+        <ul class="divide-y divide-gray-100 dark:divide-navy">
+            {% for entry in recent_months %}
+            <li class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-navy">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-orange/10 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium">Cashflow-Report {{ "%02d"|format(entry.month) }}/{{ entry.year }}</span>
+                </div>
+                <a href="/api/v1/reports/monthly/{{ entry.year }}/{{ entry.month }}/pdf"
+                   class="text-sm text-orange hover:underline font-medium">
+                    PDF &darr;
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Auto-Buchungen link -->
+    <div class="bg-blue-50 dark:bg-navy-light border border-blue-100 dark:border-navy rounded-xl p-4 flex items-center justify-between">
+        <div>
+            <p class="font-medium text-sm">Auto-Buchungen</p>
+            <p class="text-xs text-gray-500 mt-0.5">Buchungsvorschläge aus Daueraufträgen & Lastschriften bestätigen</p>
+        </div>
+        <a href="/bookings" class="text-sm text-orange hover:underline font-medium">Öffnen →</a>
+    </div>
+</div>
+
+<div id="toast" class="hidden fixed top-6 right-6 rounded-xl px-5 py-3 shadow-xl z-50 text-sm font-medium text-white"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function getYM() {
+        return {
+            year: document.getElementById('sel-year').value,
+            month: document.getElementById('sel-month').value,
+        };
+    }
+    function downloadPdf() {
+        const {year, month} = getYM();
+        window.location.href = `/api/v1/reports/monthly/${year}/${month}/pdf`;
+    }
+    async function sendEmail() {
+        const {year, month} = getYM();
+        const r = await fetch(`/api/v1/reports/monthly/${year}/${month}/send-email`, {method: 'POST'});
+        const data = await r.json();
+        showToast(data.sent ? `Report an ${data.to} gesendet` : 'E-Mail konnte nicht gesendet werden', data.sent);
+    }
+    function showToast(msg, ok) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `fixed top-6 right-6 rounded-xl px-5 py-3 shadow-xl z-50 text-sm font-medium text-white ${ok ? 'bg-green-500' : 'bg-red-500'}`;
+        setTimeout(() => t.classList.add('hidden'), 4000);
+    }
+</script>
+{% endblock %}

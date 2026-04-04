@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Sparziele{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-heading font-bold mb-6">Sparziele</h1>
+
+    {% if goals %}
+    <div class="space-y-6">
+        {% for goal in goals %}
+        {% set pct = (goal.current_amount / goal.target_amount * 100) if goal.target_amount else 0 %}
+        {% set pct = [pct, 100] | min %}
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg
+                        {% if goal.type == 'emergency' %}bg-yellow-100 text-yellow-600{% elif goal.type == 'vacation_luxury' %}bg-blue-100 text-blue-600{% else %}bg-green-100 text-green-600{% endif %}">
+                        {% if goal.type == 'emergency' %}🛡️{% elif goal.type == 'vacation_luxury' %}✈️{% else %}🏖️{% endif %}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg">{{ goal.name }}</h3>
+                        <p class="text-xs text-gray-500">
+                            {% if goal.type == 'emergency' %}Notgroschen{% elif goal.type == 'vacation_luxury' %}Urlaub / Luxus{% else %}Rente{% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold">{{ "%.0f"|format(goal.current_amount) }} &euro;</p>
+                    <p class="text-sm text-gray-500">von {{ "%.0f"|format(goal.target_amount) }} &euro;</p>
+                </div>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-navy rounded-full h-4">
+                <div class="h-4 rounded-full transition-all duration-500
+                    {% if goal.type == 'emergency' %}bg-yellow-500{% elif goal.type == 'vacation_luxury' %}bg-blue-500{% else %}bg-green-500{% endif %}"
+                    style="width: {{ "%.1f"|format(pct) }}%"></div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">{{ "%.1f"|format(pct) }}% erreicht</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center">
+        <p class="text-gray-500 mb-4">Noch keine Sparziele angelegt.</p>
+        <a href="/cashflow-onboarding/step5" class="bg-orange hover:bg-orange/90 text-white px-6 py-2 rounded-lg font-medium">Sparziele anlegen</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

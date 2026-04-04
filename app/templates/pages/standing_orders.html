@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Dauerauftr&auml;ge{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-heading font-bold">Dauerauftr&auml;ge</h1>
+        <span class="text-sm text-gray-500">{{ total }} gesamt</span>
+    </div>
+
+    {% macro order_table(items, label, color, icon) %}
+    {% if items %}
+    <div class="mb-8">
+        <h2 class="text-lg font-semibold mb-3 {{ color }}">{{ icon }} {{ label }}</h2>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 dark:bg-navy">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Empf&auml;nger</th>
+                        <th class="px-4 py-3 text-right">Betrag</th>
+                        <th class="px-4 py-3 text-center">Frequenz</th>
+                        <th class="px-4 py-3 text-center">Tag</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-navy">
+                    {% for o in items %}
+                    <tr>
+                        <td class="px-4 py-3 font-medium">{{ o.name }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ o.recipient }}</td>
+                        <td class="px-4 py-3 text-right font-bold {{ color }}">{{ "%.2f"|format(o.amount) }} &euro;</td>
+                        <td class="px-4 py-3 text-center"><span class="text-xs bg-gray-100 dark:bg-navy px-2 py-1 rounded">{{ o.frequency }}</span></td>
+                        <td class="px-4 py-3 text-center">{{ o.execution_day }}.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% endmacro %}
+
+    {{ order_table(income, "Einnahmen", "text-green-600", "+") }}
+    {{ order_table(expense, "Ausgaben", "text-red-500", "-") }}
+    {{ order_table(savings, "Spar-Transfers", "text-blue-600", "&#8594;") }}
+
+    {% if not income and not expense and not savings %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center">
+        <p class="text-gray-500 mb-4">Noch keine Dauerauftr&auml;ge angelegt.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

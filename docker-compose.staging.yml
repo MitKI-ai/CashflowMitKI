@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8081}:8000"
+    volumes:
+      - ./data-staging:/data
+    env_file:
+      - .env.staging
+    environment:
+      - DATABASE_URL=sqlite:////data/subscriptions.db
+      - APP_ENV=staging
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

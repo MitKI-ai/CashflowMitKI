@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Benutzer verwalten{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Benutzer</h1>
+    <a href="/invite" class="bg-orange hover:bg-orange-hover text-white font-medium px-4 py-2 rounded-lg transition min-h-[44px] flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Einladen
+    </a>
+</div>
+
+<div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50 dark:bg-navy border-b border-gray-200 dark:border-navy-light">
+            <tr>
+                <th class="px-4 py-3 text-left font-semibold">Name</th>
+                <th class="px-4 py-3 text-left font-semibold">E-Mail</th>
+                <th class="px-4 py-3 text-left font-semibold">Rolle</th>
+                <th class="px-4 py-3 text-left font-semibold">Status</th>
+                <th class="px-4 py-3 text-left font-semibold">Aktionen</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-navy">
+        {% for u in users %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-navy transition-colors">
+                <td class="px-4 py-3 font-medium">{{ u.display_name or '—' }}</td>
+                <td class="px-4 py-3 text-gray-600 dark:text-creme/70">{{ u.email }}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                        {% if u.role == 'admin' %}bg-orange/10 text-orange{% elif u.role == 'viewer' %}bg-gray-100 text-gray-600{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ u.role }}
+                    </span>
+                </td>
+                <td class="px-4 py-3">
+                    {% if u.is_active %}
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Aktiv</span>
+                    {% else %}
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inaktiv</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3">
+                    {% if u.id != user.id %}
+                    <div class="flex gap-2">
+                        <form method="POST" action="/api/v1/users/{{ u.id }}" class="inline">
+                            <select name="role" onchange="this.form.submit()"
+                                class="text-xs border border-gray-200 dark:border-navy rounded px-2 py-1 bg-white dark:bg-navy">
+                                {% for r in ['admin', 'user', 'viewer'] %}
+                                <option value="{{ r }}" {% if u.role == r %}selected{% endif %}>{{ r }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                        <form method="POST" action="/users/{{ u.id }}/toggle-active" class="inline">
+                            <button type="submit"
+                                class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-navy hover:bg-gray-100 dark:hover:bg-navy transition">
+                                {% if u.is_active %}Deaktivieren{% else %}Aktivieren{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <span class="text-xs text-gray-400">Du</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Keine Benutzer gefunden</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

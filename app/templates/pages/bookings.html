@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Auto-Buchungen{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-heading font-bold">Auto-Buchungen</h1>
+        <div class="flex items-center gap-3">
+            <select id="sel-month" class="border border-gray-200 dark:border-navy rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-navy-light">
+                {% for m in range(1, 13) %}
+                <option value="{{ m }}" {% if m == current_month %}selected{% endif %}>{{ m|string.zfill(2) }}/{{ current_year }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="loadPending()" class="bg-orange hover:bg-orange/90 text-white px-4 py-1.5 rounded-lg text-sm font-medium">
+                Vorschau laden
+            </button>
+        </div>
+    </div>
+
+    <div id="info-box" class="hidden bg-blue-50 dark:bg-navy-light border border-blue-200 dark:border-navy rounded-xl p-4 text-sm text-blue-800 dark:text-creme">
+        Hier werden Buchungen aus deinen <strong>Daueraufträgen</strong> und <strong>Lastschriften</strong> vorgeschlagen.
+        Hake ab, welche du übernehmen möchtest, und klicke auf <strong>Bestätigen</strong>.
+    </div>
+
+    <div id="pending-container" class="space-y-3">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center text-gray-400">
+            Klicke auf <strong>Vorschau laden</strong>, um Buchungsvorschläge für den ausgewählten Monat zu sehen.
+        </div>
+    </div>
+
+    <div id="confirm-bar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-navy dark:bg-navy-light rounded-2xl shadow-xl px-6 py-4 flex items-center gap-6 z-50">
+        <span id="confirm-count" class="text-white text-sm font-medium">0 ausgewählt</span>
+        <button onclick="confirmSelected()" class="bg-orange hover:bg-orange/90 text-white px-6 py-2 rounded-lg font-medium text-sm">
+            Buchungen bestätigen
+        </button>
+        <button onclick="hideConfirmBar()" class="text-gray-300 hover:text-white text-sm">Abbrechen</button>
+    </div>
+</div>
+
+<div id="success-toast" class="hidden fixed top-6 right-6 bg-green-500 text-white rounded-xl px-5 py-3 shadow-xl z-50 text-sm font-medium">
+    ✓ Buchungen wurden erfolgreich erstellt!
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let pendingBookings = [];
+    let selectedIndices = new Set();
+
+    const MONTH_NAMES = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+    async function loadPending() {
+        const month = parseInt(document.getElementById('sel-month').value);
+        const year = {{ current_year }};
+        const r = await fetch(`/api/v1/bookings/pending?year=${year}&month=${month}`);
+        const data = await r.json();
+        pendingBookings = data.bookings;
+        selectedIndices = new Set();
+        renderPending(data);
+    }
+
+    function renderPending(data) {
+        const container = document.getElementById('pending-container');
+        const infoBox = document.getElementById('info-box');
+        if (!data.bookings.length) {
+            infoBox.classList.add('hidden');
+            container.innerHTML = `<div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center text-gray-400">
+                Keine neuen Buchungsvorschläge für diesen Monat. Alle bereits gebucht oder keine Daueraufträge vorhanden.
+            </div>`;
+            hideConfirmBar();
+            return;
+        }
+        infoBox.classList.remove('hidden');
+        container.innerHTML = `
+            <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100 dark:border-navy flex justify-between items-center">
+                    <span class="text-sm font-medium">${data.count} Buchungsvorschläge</span>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" id="select-all" onchange="toggleAll(this.checked)" class="rounded">
+                        Alle auswählen
+                    </label>
+                </div>
+                <ul class="divide-y divide-gray-100 dark:divide-navy">
+                    ${data.bookings.map((b, i) => renderRow(b, i)).join('')}
+                </ul>
+            </div>`;
+    }
+
+    function renderRow(b, i) {
+        const d = new Date(b.transaction_date);
+        const dateStr = `${d.getDate()}. ${MONTH_NAMES[d.getMonth()]}`;
+        const sign = b.type === 'income' ? '+' : '-';
+        const color = b.type === 'income' ? 'text-green-600' : 'text-red-500';
+        const badge = b.source === 'standing_order'
+            ? '<span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">Dauerauftrag</span>'
+            : '<span class="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200">Lastschrift</span>';
+        return `<li class="px-5 py-3 flex items-center gap-4">
+            <input type="checkbox" data-index="${i}" onchange="toggleItem(${i}, this.checked)"
+                class="rounded flex-shrink-0">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="font-medium truncate">${escHtml(b.description)}</span>
+                    ${badge}
+                </div>
+                <p class="text-xs text-gray-400 mt-0.5">${dateStr}</p>
+            </div>
+            <span class="font-bold tabular-nums ${color}">${sign}${b.amount.toFixed(2)} ${b.currency}</span>
+        </li>`;
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function toggleAll(checked) {
+        const checkboxes = document.querySelectorAll('[data-index]');
+        checkboxes.forEach(cb => {
+            const i = parseInt(cb.dataset.index);
+            cb.checked = checked;
+            if (checked) selectedIndices.add(i); else selectedIndices.delete(i);
+        });
+        updateConfirmBar();
+    }
+
+    function toggleItem(i, checked) {
+        if (checked) selectedIndices.add(i); else selectedIndices.delete(i);
+        const all = document.getElementById('select-all');
+        if (all) all.checked = selectedIndices.size === pendingBookings.length;
+        updateConfirmBar();
+    }
+
+    function updateConfirmBar() {
+        const bar = document.getElementById('confirm-bar');
+        const cnt = document.getElementById('confirm-count');
+        if (selectedIndices.size > 0) {
+            bar.classList.remove('hidden');
+            cnt.textContent = `${selectedIndices.size} ausgewählt`;
+        } else {
+            hideConfirmBar();
+        }
+    }
+
+    function hideConfirmBar() {
+        document.getElementById('confirm-bar').classList.add('hidden');
+    }
+
+    async function confirmSelected() {
+        const selected = [...selectedIndices].map(i => pendingBookings[i]);
+        const r = await fetch('/api/v1/bookings/confirm', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({bookings: selected}),
+        });
+        if (r.ok) {
+            showToast();
+            await loadPending();
+        }
+    }
+
+    function showToast() {
+        const t = document.getElementById('success-toast');
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3000);
+    }
+
+    // Auto-load current month on page open
+    loadPending();
+</script>
+{% endblock %}

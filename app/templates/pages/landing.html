@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Subscription Manager — mitKI.ai{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-gradient-to-br from-brand to-blue-700 text-white rounded-2xl mb-12 px-8 py-16 text-center">
+    <h1 class="text-4xl md:text-5xl font-heading font-extrabold mb-4">
+        Subscription Manager
+    </h1>
+    <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-2xl mx-auto">
+        Alle Abos an einem Ort — für Teams und Unternehmen von mitKI.ai.
+        MRR tracken, Renewals automatisieren, Kosten im Griff behalten.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/register"
+           class="inline-block bg-white text-brand font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition">
+            Kostenlos starten
+        </a>
+        <a href="/login"
+           class="inline-block border-2 border-white text-white font-semibold px-8 py-3 rounded-xl hover:bg-white hover:text-brand transition">
+            Anmelden
+        </a>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="mb-12">
+    <h2 class="text-2xl font-heading font-bold text-center mb-8">Features</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">📊</div>
+            <h3 class="font-bold text-lg mb-2">MRR &amp; ARR Analytics</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Echtzeit-Übersicht über Monthly Recurring Revenue, Annual Run Rate und Churn Rate.
+            </p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">🔔</div>
+            <h3 class="font-bold text-lg mb-2">Automatische Erinnerungen</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Renewal-Reminder per E-Mail — nie wieder vergessene Verlängerungen oder unerwartete Abbuchungen.
+            </p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">👥</div>
+            <h3 class="font-bold text-lg mb-2">Team-Verwaltung</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Rollen, Einladungen und Multi-Tenancy — jedes Team hat seinen eigenen isolierten Bereich.
+            </p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">🔗</div>
+            <h3 class="font-bold text-lg mb-2">Webhooks &amp; API</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                REST API + GraphQL, ausgehende Webhooks mit HMAC-Signatur für sichere Integrationen.
+            </p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">🏷️</div>
+            <h3 class="font-bold text-lg mb-2">Coupons &amp; Custom Fields</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Rabattcodes mit Prozent- oder Festbetrag-Rabatt, eigene Felder für Subscription-Metadaten.
+            </p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <div class="text-3xl mb-3">📥</div>
+            <h3 class="font-bold text-lg mb-2">Import &amp; Export</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                CSV-Import mit automatischem Spalten-Mapping, Export als CSV oder JSON.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- YouTube Showcase Placeholder -->
+<section class="mb-12 bg-white dark:bg-navy-light rounded-2xl shadow p-8 text-center">
+    <h2 class="text-2xl font-heading font-bold mb-4">Demo ansehen</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Auf unserem YouTube-Kanal zeigen wir, wie der Subscription Manager im Alltag eingesetzt wird.
+    </p>
+    <div class="aspect-video max-w-2xl mx-auto bg-gray-100 dark:bg-navy rounded-xl flex items-center justify-center">
+        <div class="text-center text-gray-400">
+            <div class="text-6xl mb-3">▶</div>
+            <p class="font-semibold">YouTube Demo — mitKI.ai</p>
+            <a href="https://youtube.com/@mitkiai" target="_blank" rel="noopener"
+               class="mt-3 inline-block text-brand hover:underline text-sm">
+                Zum Kanal →
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Bottom -->
+<section class="text-center mb-8">
+    <h2 class="text-2xl font-heading font-bold mb-4">Bereit loszulegen?</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Open Source, selbst gehostet — volle Kontrolle über deine Daten.
+    </p>
+    <a href="/register"
+       class="inline-block bg-brand text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:bg-brand-dark transition text-lg">
+        Jetzt registrieren
+    </a>
+</section>
+
+{% endblock %}

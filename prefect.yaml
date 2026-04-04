@@ -1,0 +1,35 @@
+# Prefect deployment configuration
+# Deploy: prefect deploy --all
+# Requires: PREFECT_API_URL=http://192.168.1.16:4200/api
+
+name: subscription-manager
+prefect-version: "3.6.24"
+
+build: null
+push: null
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      repository: "{{ prefect.variables.git_repo | default('') }}"
+      branch: main
+
+deployments:
+  - name: renewal-reminder-daily
+    entrypoint: flows/renewal_reminder.py:renewal_reminder_flow
+    work_pool:
+      name: subscription-manager
+    schedules:
+      - cron: "0 8 * * *"
+        timezone: "Europe/Berlin"
+        active: true
+    parameters:
+      days_ahead: 7
+
+  - name: auto-renewal-daily
+    entrypoint: flows/auto_renewal.py:auto_renewal_flow
+    work_pool:
+      name: subscription-manager
+    schedules:
+      - cron: "0 6 * * *"
+        timezone: "Europe/Berlin"
+        active: true

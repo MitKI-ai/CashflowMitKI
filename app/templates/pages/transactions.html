@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Haushaltsbuch — {{ month }}{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-heading font-bold">Haushaltsbuch</h1>
+        <div class="flex items-center gap-3">
+            {% set parts = month.split('-') %}
+            {% set y = parts[0]|int %}
+            {% set m = parts[1]|int %}
+            {% set pm = m - 1 if m > 1 else 12 %}
+            {% set py = y if m > 1 else y - 1 %}
+            {% set nm = m + 1 if m < 12 else 1 %}
+            {% set ny = y if m < 12 else y + 1 %}
+            <a href="/transactions?month={{ '%04d-%02d'|format(py, pm) }}" class="px-3 py-1 border border-gray-300 dark:border-navy rounded-lg text-sm">&larr;</a>
+            <span class="font-medium">{{ month }}</span>
+            <a href="/transactions?month={{ '%04d-%02d'|format(ny, nm) }}" class="px-3 py-1 border border-gray-300 dark:border-navy rounded-lg text-sm">&rarr;</a>
+        </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4 text-center">
+            <p class="text-sm text-gray-500">Einnahmen</p>
+            <p class="text-xl font-bold text-green-600">+{{ "%.2f"|format(income) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4 text-center">
+            <p class="text-sm text-gray-500">Ausgaben</p>
+            <p class="text-xl font-bold text-red-500">-{{ "%.2f"|format(expense) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4 text-center">
+            <p class="text-sm text-gray-500">Saldo</p>
+            <p class="text-xl font-bold {% if income - expense >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                {{ "%.2f"|format(income - expense) }} &euro;
+            </p>
+        </div>
+    </div>
+
+    {% if transactions %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-navy">
+                <tr>
+                    <th class="px-4 py-3 text-left">Datum</th>
+                    <th class="px-4 py-3 text-left">Beschreibung</th>
+                    <th class="px-4 py-3 text-left">Kategorie</th>
+                    <th class="px-4 py-3 text-right">Betrag</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-navy">
+                {% for tx in transactions %}
+                <tr>
+                    <td class="px-4 py-3 text-gray-500">{{ tx.transaction_date }}</td>
+                    <td class="px-4 py-3 font-medium">{{ tx.description }}</td>
+                    <td class="px-4 py-3"><span class="text-xs bg-gray-100 dark:bg-navy px-2 py-1 rounded">{{ tx.category or '-' }}</span></td>
+                    <td class="px-4 py-3 text-right font-bold {% if tx.type == 'income' %}text-green-600{% else %}text-red-500{% endif %}">
+                        {% if tx.type == 'income' %}+{% else %}-{% endif %}{{ "%.2f"|format(tx.amount) }} &euro;
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center">
+        <p class="text-gray-500">Keine Transaktionen in diesem Monat.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

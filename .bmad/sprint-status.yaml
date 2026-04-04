@@ -1,0 +1,283 @@
+version: "6.0.0"
+project_name: "Cashflow & Retirement Planner"
+project_level: 4
+sprint_plan_path: "docs/sprint-plan-cashflow-2026-03-30.md"
+current_sprint: 20
+total_stories: 107
+total_points: 469
+
+team:
+  developer: "Claude (AI)"
+  sprint_model: "session-based"
+  capacity_per_sprint: "22-25 points"
+  tdd: true
+
+sprints:
+  - sprint_number: 1
+    status: "completed"
+    goal: "MVP Baseline: Auth, CRUD, Docker, Health, Branding"
+    committed_points: 37
+    completed_points: 37
+    stories:
+      - { id: "STORY-001", title: "Multi-Tenant Data Isolation", points: 5, status: "done" }
+      - { id: "STORY-002", title: "User Authentication", points: 5, status: "done" }
+      - { id: "STORY-003", title: "RBAC 3 Roles", points: 3, status: "done" }
+      - { id: "STORY-004", title: "Subscription CRUD API + Web", points: 8, status: "done" }
+      - { id: "STORY-005", title: "Plan Management", points: 5, status: "done" }
+      - { id: "STORY-006", title: "Public REST API + Swagger", points: 3, status: "done" }
+      - { id: "STORY-007", title: "Health + Metrics Endpoints", points: 2, status: "done" }
+      - { id: "STORY-008", title: "Docker + Docker Compose", points: 3, status: "done" }
+      - { id: "STORY-009", title: "mitKI.ai Branding Base", points: 3, status: "done" }
+
+  - sprint_number: 2
+    status: "completed"
+    goal: "Dashboard Charts, Kategorien-System, Responsive Layout, CI-Pipeline"
+    committed_points: 27
+    completed_points: 27
+    stories:
+      - { id: "STORY-017", title: "Staging Config + pyproject.toml + CI", points: 3, status: "done" }
+      - { id: "STORY-011", title: "Kategorien CRUD API + Web UI", points: 5, status: "done" }
+      - { id: "STORY-012", title: "Kategorie-Filter in Subscription-Liste", points: 3, status: "done" }
+      - { id: "STORY-010", title: "Dashboard Charts + 30d Renewals", points: 5, status: "done" }
+      - { id: "STORY-013", title: "Dark Mode Complete", points: 3, status: "done" }
+      - { id: "STORY-014", title: "Multi-Currency Display + Tenant-Setting", points: 3, status: "done" }
+      - { id: "STORY-015", title: "Responsive Layout (Mobile + Hamburger)", points: 3, status: "done" }
+      - { id: "STORY-016", title: "Logo + Session Secure Flag + Image Size", points: 2, status: "done" }
+
+  - sprint_number: 3
+    status: "completed"
+    goal: "Service Layer Refactor, Audit Log, In-App Notifications, Test Coverage 70%+"
+    committed_points: 23
+    completed_points: 23
+    stories:
+      - { id: "STORY-018", title: "Service Layer Refactor", points: 5, status: "done" }
+      - { id: "STORY-019", title: "Audit Log (Write + Admin View)", points: 5, status: "done" }
+      - { id: "STORY-020", title: "In-App Notifications + Bell + Polling", points: 5, status: "done" }
+      - { id: "STORY-021", title: "Tests-Suite Basis + Coverage 86%", points: 8, status: "done" }
+
+  - sprint_number: 4
+    status: "completed"
+    goal: "E-Mail via SMTP, Prefect Renewal Reminder, Auto-Renewal Flow"
+    committed_points: 18
+    completed_points: 18
+    stories:
+      - { id: "STORY-022", title: "E-Mail Service (SMTP + Jinja2)", points: 5, status: "done" }
+      - { id: "STORY-023", title: "Prefect Flow: Renewal Reminder", points: 5, status: "done" }
+      - { id: "STORY-024", title: "Prefect Flow: Auto-Renewal + Expiry", points: 5, status: "done" }
+      - { id: "STORY-025", title: "Internal API Endpoints", points: 3, status: "done" }
+
+  - sprint_number: 5
+    status: "completed"
+    goal: "Teams einladen, User verwalten, Self-Service Portal, Onboarding Wizard"
+    committed_points: 24
+    completed_points: 24
+    stories:
+      - { id: "STORY-026", title: "Team Invitations", points: 8, status: "done" }
+      - { id: "STORY-027", title: "User Management Seite", points: 3, status: "done" }
+      - { id: "STORY-028", title: "Self-Service Portal", points: 5, status: "done" }
+      - { id: "STORY-029", title: "Onboarding Wizard 3-Step", points: 5, status: "done" }
+      - { id: "STORY-030", title: "Settings Seite (Tenant + Locale)", points: 3, status: "done" }
+
+  - sprint_number: 6
+    status: "completed"
+    goal: "Volltextsuche, i18n DE+EN, CSV Import/Export, Icon Bibliothek"
+    committed_points: 29
+    completed_points: 29
+    stories:
+      - { id: "STORY-031", title: "FTS5 Volltextsuche", points: 5, status: "done" }
+      - { id: "STORY-032", title: "CSV Import + Spalten-Mapping", points: 5, status: "done" }
+      - { id: "STORY-033", title: "CSV + JSON Export", points: 3, status: "done" }
+      - { id: "STORY-034", title: "Internationalisierung DE + EN", points: 8, status: "done" }
+      - { id: "STORY-035", title: "Icon Bibliothek (Picker + Service)", points: 8, status: "done" }
+
+  - sprint_number: 7
+    status: "completed"
+    goal: "Admin Analytics, Outgoing Webhooks, Coupons, Custom Fields, NocoDB Icons"
+    committed_points: 29
+    completed_points: 29
+    stories:
+      - { id: "STORY-036", title: "Admin Analytics Dashboard MRR+Churn", points: 8, status: "done" }
+      - { id: "STORY-037", title: "Outgoing Webhooks HMAC+Prefect", points: 8, status: "done" }
+      - { id: "STORY-038", title: "Coupons + Rabattcodes", points: 5, status: "done" }
+      - { id: "STORY-039", title: "Custom Fields", points: 5, status: "done" }
+      - { id: "STORY-040", title: "NocoDB Icon-Integration", points: 3, status: "done" }
+
+  - sprint_number: 8
+    status: "completed"
+    goal: "JWT Auth Upgrade, SSO Google+Microsoft, Structured Logging, Alembic"
+    committed_points: 22
+    completed_points: 22
+    stories:
+      - { id: "STORY-041", title: "Structured Logging (structlog)", points: 3, status: "done" }
+      - { id: "STORY-042", title: "OAuth2/JWT Auth Upgrade", points: 8, status: "done" }
+      - { id: "STORY-043", title: "SSO Google + Microsoft", points: 8, status: "done" }
+      - { id: "STORY-044", title: "Alembic Migrations Setup", points: 3, status: "done" }
+
+  - sprint_number: 9
+    status: "completed"
+    goal: "GraphQL API, YouTube Landing Page, PostgreSQL Migration, Security Review"
+    committed_points: 21
+    completed_points: 21
+    stories:
+      - { id: "STORY-045", title: "GraphQL API (Strawberry)", points: 8, status: "done" }
+      - { id: "STORY-046", title: "YouTube Showcase + Landing Page", points: 5, status: "done" }
+      - { id: "STORY-047", title: "PostgreSQL Migration Validation", points: 5, status: "done" }
+      - { id: "STORY-048", title: "Security Review + Load Test", points: 3, status: "done" }
+
+  - sprint_number: 10
+    status: "completed"
+    goal: "Konten & Zahlungsströme: Account, StandingOrder, DirectDebit, Transfer CRUD + Seed"
+    committed_points: 23
+    completed_points: 23
+    stories:
+      - { id: "STORY-054", title: "Account Model + CRUD API + Web UI", points: 5, status: "done" }
+      - { id: "STORY-055", title: "Standing Orders CRUD (Income/Expense/Transfer)", points: 5, status: "done" }
+      - { id: "STORY-056", title: "Direct Debits CRUD + SEPA", points: 5, status: "done" }
+      - { id: "STORY-057", title: "Transfers zwischen Konten", points: 3, status: "done" }
+      - { id: "STORY-058", title: "Seed Script (seed_cashflow.py)", points: 3, status: "done" }
+      - { id: "STORY-059", title: "Navigation Update (Cashflow-Menü)", points: 2, status: "done" }
+
+  - sprint_number: 11
+    status: "completed"
+    goal: "Geldanlagen, Haushaltsbuch, Sparziele: Investment, Transaction, SavingsGoal CRUD"
+    committed_points: 23
+    completed_points: 23
+    stories:
+      - { id: "STORY-060", title: "Investment CRUD + Rendite-Prognose", points: 5, status: "done" }
+      - { id: "STORY-061", title: "Transaction CRUD (Haushaltsbuch)", points: 5, status: "done" }
+      - { id: "STORY-062", title: "Schnell-Eingabe Modal + Kategorien-Filter", points: 3, status: "done" }
+      - { id: "STORY-063", title: "Savings Goals (3 Typen) + Fortschritt", points: 5, status: "done" }
+      - { id: "STORY-068", title: "Monats-Zusammenfassung Haushaltsbuch", points: 3, status: "done" }
+      - { id: "STORY-069", title: "Gesamtvermögen-Widget", points: 2, status: "done" }
+
+  - sprint_number: 12
+    status: "completed"
+    goal: "Cashflow Engine + Dashboard + Renten-Rechner + Snapshots"
+    committed_points: 26
+    completed_points: 26
+    stories:
+      - { id: "STORY-065", title: "CashflowService + Summary API", points: 5, status: "done" }
+      - { id: "STORY-066", title: "Cashflow-Dashboard Web UI + Charts", points: 8, status: "done" }
+      - { id: "STORY-064", title: "Retirement Profile + Calculator", points: 8, status: "done" }
+      - { id: "STORY-067", title: "Cashflow-Snapshots + Trend", points: 5, status: "done" }
+
+  - sprint_number: 13
+    status: "completed"
+    goal: "Cashflow-Onboarding Wizard (6 Schritte)"
+    committed_points: 24
+    completed_points: 24
+    stories:
+      - { id: "STORY-070", title: "Onboarding Step 1-2: Konten + Daueraufträge", points: 5, status: "done" }
+      - { id: "STORY-071", title: "Onboarding Step 3: Lastschriften", points: 3, status: "done" }
+      - { id: "STORY-072", title: "Onboarding Step 4: Geldanlagen", points: 3, status: "done" }
+      - { id: "STORY-073", title: "Onboarding Step 5: Sparziele (3 Karten)", points: 5, status: "done" }
+      - { id: "STORY-074", title: "Onboarding Step 6: Übersicht + Abschluss", points: 5, status: "done" }
+      - { id: "STORY-075", title: "Playwright E2E Tests für Onboarding", points: 3, status: "done" }
+
+  - sprint_number: 14
+    status: "completed"
+    goal: "Polish & Advanced: Kalender, Simulator, Budget Alerts, Report E-Mail"
+    committed_points: 18
+    completed_points: 18
+    stories:
+      - { id: "STORY-076", title: "Cashflow-Monatskalender", points: 5, status: "done" }
+      - { id: "STORY-077", title: "Was wäre wenn?-Simulator", points: 5, status: "done" }
+      - { id: "STORY-078", title: "Budget Alerts (Schwellenwert-Warnung)", points: 5, status: "done" }
+      - { id: "STORY-079", title: "Monthly Cashflow Report E-Mail", points: 3, status: "done" }
+
+  - sprint_number: 15
+    status: "completed"
+    goal: "Inflationsbereinigung, 3-Szenarien-Rente, Steuer, Dashboard-Widgets"
+    committed_points: 24
+    completed_points: 24
+    stories:
+      - { id: "STORY-080", title: "Inflations-Parameter + Kaufkraft-Berechnung", points: 3, status: "done" }
+      - { id: "STORY-081", title: "Renten-Rechner 3-Szenarien (API + Chart)", points: 5, status: "done" }
+      - { id: "STORY-082", title: "Steuer-Schätzung Kapitalerträge", points: 5, status: "done" }
+      - { id: "STORY-083", title: "Dashboard Widget-System (Registry + Config)", points: 5, status: "done" }
+      - { id: "STORY-084", title: "8 Standard-Widgets implementieren", points: 3, status: "done" }
+      - { id: "STORY-085", title: "Drag & Drop Reorder + 3 Presets", points: 3, status: "done" }
+
+  - sprint_number: 16
+    status: "completed"
+    goal: "LLM Provider & Key Management + Chat UI Basis"
+    committed_points: 22
+    completed_points: 22
+    stories:
+      - { id: "STORY-086", title: "LLMProvider Model + Key-Verschlüsselung (Fernet)", points: 5, status: "done" }
+      - { id: "STORY-087", title: "Anthropic Claude SDK Integration + Streaming", points: 5, status: "done" }
+      - { id: "STORY-088", title: "OpenRouter Integration (OpenAI-kompatibel)", points: 3, status: "done" }
+      - { id: "STORY-089", title: "Settings UI: Provider-Config + Test-Button", points: 3, status: "done" }
+      - { id: "STORY-090", title: "Tool-Definitionen für alle Entities", points: 3, status: "done" }
+      - { id: "STORY-091", title: "Chat UI Panel + Message-Flow", points: 3, status: "done" }
+
+  - sprint_number: 17
+    status: "completed"
+    goal: "AI Chat CRUD + Bank Import Basis"
+    committed_points: 25
+    completed_points: 25
+    stories:
+      - { id: "STORY-092", title: "Chat Entity CRUD: Konten, Daueraufträge, Lastschriften", points: 5, status: "done" }
+      - { id: "STORY-093", title: "Chat Entity CRUD: Transaktionen, Investments, Sparziele", points: 5, status: "done" }
+      - { id: "STORY-094", title: "Chat Bestätigungs-Flow + Kontext-Injection", points: 3, status: "done" }
+      - { id: "STORY-095", title: "CSV Bank Statement Parser + Spalten-Mapping", points: 5, status: "done" }
+      - { id: "STORY-096", title: "PDF Bank Statement Parser (PyMuPDF/pdfplumber)", points: 5, status: "done" }
+      - { id: "STORY-097", title: "Import-Vorschau Tabelle + Farbcode-Matching", points: 2, status: "done" }
+
+  - sprint_number: 18
+    status: "completed"
+    goal: "Smart Import + AI Polish"
+    committed_points: 20
+    completed_points: 20
+    stories:
+      - { id: "STORY-098", title: "Fuzzy-Matching gegen bestehende Entities", points: 5, status: "done" }
+      - { id: "STORY-099", title: "Entity-Erstellung aus Kontoauszug (Batch)", points: 5, status: "done" }
+      - { id: "STORY-100", title: "LLM-gestützte Auto-Kategorisierung", points: 5, status: "done" }
+      - { id: "STORY-101", title: "Import-Historie + Duplikat-Erkennung", points: 3, status: "done" }
+      - { id: "STORY-102", title: "E2E Tests AI Chat + Import Flow", points: 2, status: "done" }
+
+  - sprint_number: 19
+    status: "completed"
+    goal: "Auto-Buchungen aus Daueraufträgen & Lastschriften (EPIC-212)"
+    committed_points: 18
+    completed_points: 18
+    stories:
+      - { id: "STORY-103", title: "BookingService: generate_pending + Frequenz-Logik", points: 5, status: "done" }
+      - { id: "STORY-104", title: "Duplikat-Erkennung (kein Doppeltbuchen)", points: 3, status: "done" }
+      - { id: "STORY-105", title: "API: /bookings/pending, /confirm, /generate-for-month", points: 5, status: "done" }
+      - { id: "STORY-106", title: "Confirmation UI + Prefect-Flow + Tests", points: 5, status: "done" }
+
+  - sprint_number: 20
+    status: "completed"
+    goal: "PDF Finanzreport + E-Mail Versand (EPIC-208)"
+    committed_points: 16
+    completed_points: 16
+    stories:
+      - { id: "STORY-107", title: "ReportService: PDF-Generierung mit ReportLab", points: 5, status: "done" }
+      - { id: "STORY-108", title: "Download-Endpoint + Send-Email-Endpoint", points: 5, status: "done" }
+      - { id: "STORY-109", title: "Prefect-Flow: monthly_report (Buchungen + Reports)", points: 3, status: "done" }
+      - { id: "STORY-110", title: "Berichte-Seite + Navigation + Tests (27 Tests)", points: 3, status: "done" }
+
+velocity:
+  sprint_1: 37
+  sprint_2: 27
+  sprint_3: 23
+  sprint_4: 18
+  sprint_5: 24
+  sprint_6: 29
+  sprint_7: 29
+  sprint_8: 22
+  sprint_9: 21
+  sprint_10: 23
+  sprint_11: 23
+  sprint_12: 26
+  sprint_13: 24
+  sprint_14: 18
+  sprint_15: 24
+  sprint_16: 22
+  sprint_17: 25
+  sprint_18: 20
+  sprint_19: 18
+  sprint_20: 16
+  total_points_delivered: 469
+  rolling_average: 23

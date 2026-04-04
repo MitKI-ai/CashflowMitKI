@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Was w&auml;re wenn? — Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8">
+    <h1 class="text-2xl font-heading font-bold">Was w&auml;re wenn? — Simulator</h1>
+    <p class="text-gray-500 dark:text-creme/60">Ver&auml;ndere die Schieberegler und sieh sofort wie sich dein Cashflow &auml;ndert.</p>
+
+    <!-- Sliders -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6 space-y-6">
+        <div>
+            <label class="flex justify-between text-sm font-medium mb-2">
+                <span>Einnahmen &plusmn;</span>
+                <span id="income-label" class="text-green-600">+0 &euro;</span>
+            </label>
+            <input type="range" id="income-slider" min="-2000" max="2000" value="0" step="50"
+                class="w-full accent-orange" oninput="updateSimulation()">
+        </div>
+        <div>
+            <label class="flex justify-between text-sm font-medium mb-2">
+                <span>Ausgaben &plusmn;</span>
+                <span id="expense-label" class="text-red-500">+0 &euro;</span>
+            </label>
+            <input type="range" id="expense-slider" min="-2000" max="2000" value="0" step="50"
+                class="w-full accent-orange" oninput="updateSimulation()">
+        </div>
+        <div>
+            <label class="flex justify-between text-sm font-medium mb-2">
+                <span>Sparrate &plusmn;</span>
+                <span id="savings-label" class="text-blue-600">+0 &euro;</span>
+            </label>
+            <input type="range" id="savings-slider" min="-1000" max="1000" value="0" step="50"
+                class="w-full accent-orange" oninput="updateSimulation()">
+        </div>
+        <button onclick="resetSliders()" class="text-sm text-gray-400 hover:text-orange">Zur&uuml;cksetzen</button>
+    </div>
+
+    <!-- Comparison -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-creme mb-4">Aktuell</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>Einnahmen</span><span class="font-medium text-green-600">{{ "%.2f"|format(summary.monthly_income) }} &euro;</span></div>
+                <div class="flex justify-between"><span>Ausgaben</span><span class="font-medium text-red-500">{{ "%.2f"|format(summary.monthly_expenses + summary.monthly_direct_debits + summary.monthly_subscriptions) }} &euro;</span></div>
+                <div class="flex justify-between"><span>Sparrate</span><span class="font-medium text-blue-600">{{ "%.2f"|format(summary.monthly_savings) }} &euro;</span></div>
+                <hr class="border-gray-200 dark:border-navy">
+                <div class="flex justify-between font-bold"><span>Netto</span><span id="current-net" class="{% if summary.monthly_net >= 0 %}text-green-600{% else %}text-red-500{% endif %}">{{ "%.2f"|format(summary.monthly_net) }} &euro;</span></div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6 border-2 border-orange/30">
+            <h2 class="text-sm font-medium text-orange mb-4">Szenario</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>Einnahmen</span><span id="sim-income" class="font-medium text-green-600">{{ "%.2f"|format(summary.monthly_income) }} &euro;</span></div>
+                <div class="flex justify-between"><span>Ausgaben</span><span id="sim-expenses" class="font-medium text-red-500">{{ "%.2f"|format(summary.monthly_expenses + summary.monthly_direct_debits + summary.monthly_subscriptions) }} &euro;</span></div>
+                <div class="flex justify-between"><span>Sparrate</span><span id="sim-savings" class="font-medium text-blue-600">{{ "%.2f"|format(summary.monthly_savings) }} &euro;</span></div>
+                <hr class="border-gray-200 dark:border-navy">
+                <div class="flex justify-between font-bold"><span>Netto</span><span id="sim-net">{{ "%.2f"|format(summary.monthly_net) }} &euro;</span></div>
+            </div>
+            <div id="sim-diff" class="mt-3 text-center text-sm font-medium text-gray-400"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const base = {
+        income: {{ summary.monthly_income }},
+        expenses: {{ summary.monthly_expenses + summary.monthly_direct_debits + summary.monthly_subscriptions }},
+        savings: {{ summary.monthly_savings }},
+        net: {{ summary.monthly_net }}
+    };
+
+    function fmt(v) { return v.toFixed(2) + ' \u20ac'; }
+
+    function updateSimulation() {
+        const incAdj = parseInt(document.getElementById('income-slider').value);
+        const expAdj = parseInt(document.getElementById('expense-slider').value);
+        const savAdj = parseInt(document.getElementById('savings-slider').value);
+
+        document.getElementById('income-label').textContent = (incAdj >= 0 ? '+' : '') + incAdj + ' \u20ac';
+        document.getElementById('expense-label').textContent = (expAdj >= 0 ? '+' : '') + expAdj + ' \u20ac';
+        document.getElementById('savings-label').textContent = (savAdj >= 0 ? '+' : '') + savAdj + ' \u20ac';
+
+        const simIncome = base.income + incAdj;
+        const simExpenses = base.expenses + expAdj;
+        const simSavings = base.savings + savAdj;
+        const simNet = simIncome - simExpenses - simSavings;
+        const diffNet = simNet - base.net;
+
+        document.getElementById('sim-income').textContent = fmt(simIncome);
+        document.getElementById('sim-expenses').textContent = fmt(simExpenses);
+        document.getElementById('sim-savings').textContent = fmt(simSavings);
+
+        const netEl = document.getElementById('sim-net');
+        netEl.textContent = fmt(simNet);
+        netEl.className = simNet >= 0 ? 'text-green-600' : 'text-red-500';
+
+        const diffEl = document.getElementById('sim-diff');
+        if (diffNet !== 0) {
+            diffEl.textContent = (diffNet > 0 ? '+' : '') + fmt(diffNet) + ' vs. aktuell';
+            diffEl.className = 'mt-3 text-center text-sm font-medium ' + (diffNet > 0 ? 'text-green-600' : 'text-red-500');
+        } else {
+            diffEl.textContent = '';
+        }
+    }
+
+    function resetSliders() {
+        document.getElementById('income-slider').value = 0;
+        document.getElementById('expense-slider').value = 0;
+        document.getElementById('savings-slider').value = 0;
+        updateSimulation();
+    }
+</script>
+{% endblock %}

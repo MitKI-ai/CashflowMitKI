@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Import / Export{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Import / Export</h1>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 max-w-4xl">
+    <!-- CSV Import -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-1">CSV Import</h2>
+        <p class="text-sm text-gray-500 dark:text-creme/60 mb-4">
+            Importiere Abonnements aus einer CSV-Datei.<br>
+            Unterstützte Spalten: <code class="text-xs bg-gray-100 dark:bg-navy px-1 rounded">name, provider, cost, currency, billing_cycle, status, notes</code>
+        </p>
+        <form id="import-form" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">CSV-Datei</label>
+                <input type="file" name="file" accept=".csv" required id="csv-file"
+                    class="w-full text-sm text-gray-700 dark:text-creme/80
+                           file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0
+                           file:bg-orange file:text-white file:font-medium file:cursor-pointer
+                           hover:file:bg-orange-hover">
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="previewCSV()"
+                    class="flex-1 border border-orange text-orange hover:bg-orange/5 font-medium py-2 rounded-lg transition">
+                    Vorschau
+                </button>
+                <button type="button" onclick="importCSV()"
+                    class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-2 rounded-lg transition">
+                    Importieren
+                </button>
+            </div>
+        </form>
+        <div id="import-result" class="mt-4 hidden text-sm"></div>
+    </div>
+
+    <!-- Export -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-1">Export</h2>
+        <p class="text-sm text-gray-500 dark:text-creme/60 mb-4">
+            Exportiere alle deine Abonnements.
+        </p>
+        <div class="space-y-3">
+            <a href="/api/v1/export/csv" download="subscriptions.csv"
+                class="flex items-center gap-3 w-full border border-gray-200 dark:border-navy
+                       hover:bg-gray-50 dark:hover:bg-navy rounded-lg px-4 py-3 transition">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0118 9.586V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="font-medium">Als CSV exportieren</span>
+            </a>
+            <a href="/api/v1/export/json" download="subscriptions.json"
+                class="flex items-center gap-3 w-full border border-gray-200 dark:border-navy
+                       hover:bg-gray-50 dark:hover:bg-navy rounded-lg px-4 py-3 transition">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                <span class="font-medium">Als JSON exportieren</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Preview table -->
+<div id="preview-section" class="hidden mt-6 max-w-4xl">
+    <h3 class="font-heading font-semibold mb-3">Vorschau</h3>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-x-auto">
+        <table class="w-full text-sm" id="preview-table">
+            <thead class="bg-gray-50 dark:bg-navy border-b"></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+async function previewCSV() {
+    const file = document.getElementById('csv-file').files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    const r = await fetch('/api/v1/import/csv/preview', {method:'POST', body: fd});
+    const data = await r.json();
+    renderPreview(data);
+    document.getElementById('preview-section').classList.remove('hidden');
+}
+
+function renderPreview({columns, rows}) {
+    const thead = document.querySelector('#preview-table thead');
+    const tbody = document.querySelector('#preview-table tbody');
+    thead.innerHTML = '<tr>' + columns.map(c => `<th class="px-3 py-2 text-left font-semibold">${c}</th>`).join('') + '</tr>';
+    tbody.innerHTML = rows.slice(0,10).map(r =>
+        '<tr class="border-t border-gray-100 dark:border-navy">' +
+        columns.map(c => `<td class="px-3 py-2">${r[c]||''}</td>`).join('') +
+        '</tr>'
+    ).join('');
+}
+
+async function importCSV() {
+    const file = document.getElementById('csv-file').files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    const r = await fetch('/api/v1/import/csv', {method:'POST', body: fd});
+    const data = await r.json();
+    const el = document.getElementById('import-result');
+    el.classList.remove('hidden');
+    el.innerHTML = data.imported > 0
+        ? `<p class="text-green-700 dark:text-green-400">✓ ${data.imported} Abonnement(e) importiert${data.skipped ? `, ${data.skipped} übersprungen` : ''}.</p>`
+        : `<p class="text-red-600">Keine Abonnements importiert. ${data.skipped} übersprungen.</p>`;
+}
+</script>
+{% endblock %}

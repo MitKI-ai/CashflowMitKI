@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(ssh -o:*)",
+      "Bash(curl -s http://192.168.1.16:4200/api/work_pools/subscription-manager)",
+      "Bash(python -m pytest tests/e2e/ -v --headed --no-header -p no:warnings)",
+      "Bash(python -m pytest tests/test_accounts.py -v --no-header -p no:warnings)"
+    ]
+  }
+}

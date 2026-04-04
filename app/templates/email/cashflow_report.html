@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+    <div style="text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 24px; font-weight: bold; color: #F97316;">mitKI</span>
+        <span style="color: #999;">.ai</span>
+    </div>
+
+    <h2 style="color: #0A1A3A;">Dein Cashflow-Report: {{ month }}</h2>
+
+    <p>Hallo {{ user_name }},</p>
+    <p>hier ist dein monatlicher Cashflow-Report:</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px 0;">Einnahmen</td>
+            <td style="padding: 8px 0; text-align: right; color: #22C55E; font-weight: bold;">+{{ "%.2f"|format(income) }} &euro;</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px 0;">Feste Ausgaben</td>
+            <td style="padding: 8px 0; text-align: right; color: #EF4444;">-{{ "%.2f"|format(expenses) }} &euro;</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px 0;">Lastschriften</td>
+            <td style="padding: 8px 0; text-align: right; color: #EF4444;">-{{ "%.2f"|format(direct_debits) }} &euro;</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px 0;">Abonnements</td>
+            <td style="padding: 8px 0; text-align: right; color: #EF4444;">-{{ "%.2f"|format(subscriptions) }} &euro;</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px 0;">Sparrate</td>
+            <td style="padding: 8px 0; text-align: right; color: #3B82F6;">-{{ "%.2f"|format(savings) }} &euro;</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px 0; font-weight: bold; font-size: 18px;">Netto-Cashflow</td>
+            <td style="padding: 12px 0; text-align: right; font-weight: bold; font-size: 18px;
+                {% if net >= 0 %}color: #22C55E;{% else %}color: #EF4444;{% endif %}">
+                {{ "%.2f"|format(net) }} &euro;
+            </td>
+        </tr>
+    </table>
+
+    {% if net_worth %}
+    <p style="background: #F8E3C7; padding: 12px; border-radius: 8px; text-align: center;">
+        Gesamtverm&ouml;gen: <strong>{{ "%.2f"|format(net_worth) }} &euro;</strong>
+    </p>
+    {% endif %}
+
+    <p style="margin-top: 24px;">
+        <a href="https://www.cashflow.mitki.ai/dashboard" style="background: #F97316; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Dashboard &ouml;ffnen
+        </a>
+    </p>
+
+    <p style="color: #999; font-size: 12px; margin-top: 32px;">
+        Diese E-Mail wurde automatisch von mitKI.ai gesendet.
+    </p>
+</body>
+</html>

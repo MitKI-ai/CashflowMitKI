@@ -1,0 +1,25 @@
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+pydantic>=2.10
+pydantic-settings
+jinja2
+python-multipart
+bcrypt
+itsdangerous
+aiosmtplib
+email-validator
+alembic
+httpx
+# For PostgreSQL: psycopg2-binary
+structlog
+PyJWT
+authlib
+strawberry-graphql[fastapi]
+pytest
+pytest-cov
+pytest-playwright
+playwright
+reportlab
+ruff
+mypy

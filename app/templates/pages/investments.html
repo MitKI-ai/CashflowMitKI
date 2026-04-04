@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Geldanlagen{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-heading font-bold">Geldanlagen</h1>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500">Aktueller Wert</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(total_value) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500">Einbezahlt</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(total_invested) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500">Gewinn/Verlust</p>
+            <p class="text-2xl font-bold {% if total_gain >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                {% if total_gain >= 0 %}+{% endif %}{{ "%.2f"|format(total_gain) }} &euro;
+            </p>
+        </div>
+    </div>
+
+    {% if investments %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for inv in investments %}
+        {% set gain = inv.current_value - inv.invested_amount %}
+        {% set return_pct = ((gain / inv.invested_amount) * 100) if inv.invested_amount else 0 %}
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg
+                    {% if inv.type == 'etf' %}bg-purple-100 text-purple-600{% elif inv.type == 'stock' %}bg-blue-100 text-blue-600{% elif inv.type == 'crypto' %}bg-yellow-100 text-yellow-600{% else %}bg-gray-100 text-gray-600{% endif %}">
+                    {% if inv.type == 'etf' %}📊{% elif inv.type == 'stock' %}📈{% elif inv.type == 'crypto' %}₿{% elif inv.type == 'bond' %}📜{% else %}💎{% endif %}
+                </div>
+                <div>
+                    <h3 class="font-semibold">{{ inv.name }}</h3>
+                    <p class="text-xs text-gray-500">{{ inv.type | upper }}{% if inv.broker %} &middot; {{ inv.broker }}{% endif %}</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-2xl font-bold">{{ "%.2f"|format(inv.current_value) }} &euro;</p>
+                    <p class="text-xs text-gray-500">Einbezahlt: {{ "%.2f"|format(inv.invested_amount) }} &euro;</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold {% if gain >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                        {% if gain >= 0 %}+{% endif %}{{ "%.2f"|format(gain) }} &euro;
+                    </p>
+                    <p class="text-xs {% if gain >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                        {{ "%.1f"|format(return_pct) }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center">
+        <p class="text-gray-500">Noch keine Geldanlagen angelegt.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

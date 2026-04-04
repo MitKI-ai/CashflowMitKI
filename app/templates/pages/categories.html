@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Kategorien{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Kategorien</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Existing categories -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Vorhandene Kategorien</h2>
+        {% if categories %}
+        <ul class="space-y-2">
+            {% for cat in categories %}
+            <li class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-navy">
+                <div class="flex items-center gap-3">
+                    <span class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: {{ cat.color }}"></span>
+                    <span class="font-medium">{{ cat.name }}</span>
+                    {% if cat.icon %}<span class="text-gray-400 text-sm">{{ cat.icon }}</span>{% endif %}
+                </div>
+                <form method="POST" action="/categories/{{ cat.id }}/delete"
+                    onsubmit="return confirm('Kategorie löschen?')">
+                    <button type="submit" class="text-red-400 hover:text-red-600 text-sm">Löschen</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-gray-400 text-sm">Noch keine Kategorien. Erstelle die erste rechts.</p>
+        {% endif %}
+    </div>
+
+    <!-- New category form -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Neue Kategorie</h2>
+        <form method="POST" action="/categories/new" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name *</label>
+                <input type="text" name="name" required placeholder="z.B. SaaS, Cloud, Dev Tools"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Farbe</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" name="color" value="#F97316"
+                        class="w-10 h-10 rounded cursor-pointer border-0">
+                    <span class="text-sm text-gray-500">Klick zum Auswählen</span>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Icon (optional)</label>
+                <input type="text" name="icon" placeholder="z.B. 💻 oder heroicon-name"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <button type="submit"
+                class="w-full bg-orange hover:bg-orange-hover text-white font-medium py-2 rounded-lg transition min-h-[44px]">
+                Kategorie erstellen
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
