@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Cashflow-Kalender — {{ month }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-heading font-bold">Cashflow-Kalender</h1>
+        <div class="flex items-center gap-4">
+            <a href="/cashflow/calendar?month={{ prev_month }}" class="px-3 py-1 rounded-lg border border-gray-300 dark:border-navy hover:bg-gray-100 dark:hover:bg-navy text-sm">&larr;</a>
+            <span class="font-medium">{{ month_name }} {{ month.split('-')[0] }}</span>
+            <a href="/cashflow/calendar?month={{ next_month }}" class="px-3 py-1 rounded-lg border border-gray-300 dark:border-navy hover:bg-gray-100 dark:hover:bg-navy text-sm">&rarr;</a>
+        </div>
+    </div>
+
+    <!-- Desktop: Grid -->
+    <div class="hidden md:grid grid-cols-7 gap-1">
+        {% for label in ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"] %}
+        <div class="text-center text-xs font-medium text-gray-400 py-1">{{ label }}</div>
+        {% endfor %}
+
+        {# Calculate first weekday offset (Monday=0) #}
+        {% set first_weekday = (days[0].day | string) %}
+        {% for day in days %}
+        <div class="min-h-[80px] border border-gray-200 dark:border-navy rounded-lg p-1
+            {% if day.entries %}bg-white dark:bg-navy-light{% else %}bg-gray-50 dark:bg-navy/50{% endif %}">
+            <div class="flex justify-between items-start">
+                <span class="text-xs font-medium">{{ day.day }}</span>
+                <span class="text-[10px] {% if day.running_balance >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                    {{ "%.0f"|format(day.running_balance) }}
+                </span>
+            </div>
+            {% for entry in day.entries %}
+            <div class="text-[10px] mt-0.5 px-1 rounded
+                {% if entry.type == 'income' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                {% elif entry.type == 'savings' %}bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                {% else %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400{% endif %}">
+                {{ entry.name }} {{ "%.0f"|format(entry.amount) }}&euro;
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Mobile: Timeline -->
+    <div class="md:hidden space-y-2">
+        {% for day in days %}
+        {% if day.entries %}
+        <div class="bg-white dark:bg-navy-light rounded-lg p-3 shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium">{{ day.day }}. {{ month_name }}</span>
+                <span class="text-xs {% if day.running_balance >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                    Saldo: {{ "%.2f"|format(day.running_balance) }} &euro;
+                </span>
+            </div>
+            {% for entry in day.entries %}
+            <div class="flex justify-between text-sm py-0.5">
+                <span class="{% if entry.type == 'income' %}text-green-600{% else %}text-red-500{% endif %}">
+                    {{ entry.name }}
+                </span>
+                <span class="font-medium">
+                    {% if entry.type == 'income' %}+{% else %}-{% endif %}{{ "%.2f"|format(entry.amount) }} &euro;
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

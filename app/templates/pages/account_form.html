@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Konto bearbeiten' if account else 'Neues Konto' }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-heading font-bold mb-6">{{ 'Konto bearbeiten' if account else 'Neues Konto anlegen' }}</h1>
+
+    <form method="POST" class="bg-white dark:bg-navy-light rounded-xl shadow p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name *</label>
+                <input type="text" name="name" required value="{{ account.name if account else '' }}"
+                    placeholder="z.B. Girokonto Sparkasse"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Kontotyp *</label>
+                <select name="type" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                    {% for t in [('checking', 'Girokonto'), ('savings', 'Sparkonto / Tagesgeld'), ('investment', 'Depot'), ('deposit', 'Festgeld')] %}
+                    <option value="{{ t[0] }}" {% if account and account.type == t[0] %}selected{% endif %}>{{ t[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Bank</label>
+                <input type="text" name="bank_name" value="{{ account.bank_name if account else '' }}"
+                    placeholder="z.B. Sparkasse, ING, DKB"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Kontostand (€)</label>
+                <input type="number" name="balance" step="0.01" value="{{ account.balance if account else '0.00' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Währung</label>
+                <select name="currency" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                    {% for c in ['EUR', 'CHF', 'USD', 'GBP'] %}
+                    <option value="{{ c }}" {% if account and account.currency == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Zinssatz (% p.a.)</label>
+                <input type="number" name="interest_rate" step="0.1" value="{{ account.interest_rate if account else '0.0' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <input type="checkbox" name="is_primary" id="is_primary" value="true"
+                {% if account and account.is_primary %}checked{% endif %}
+                class="rounded border-gray-300 text-orange focus:ring-orange">
+            <label for="is_primary" class="text-sm">Hauptkonto (für Cashflow-Berechnung)</label>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Notizen</label>
+            <textarea name="notes" rows="2"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">{{ account.notes if account and account.notes else '' }}</textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="bg-orange hover:bg-orange/90 text-white px-6 py-2 rounded-lg font-medium min-h-[44px]">
+                {{ 'Speichern' if account else 'Konto anlegen' }}
+            </button>
+            <a href="/accounts" class="px-6 py-2 rounded-lg border min-h-[44px] flex items-center">Abbrechen</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Abo bearbeiten' if subscription else 'Neues Abo' }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-heading font-bold mb-6">{{ 'Abo bearbeiten' if subscription else 'Neues Abo anlegen' }}</h1>
+
+    <form method="POST" class="bg-white dark:bg-navy-light rounded-xl shadow p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name *</label>
+                <input type="text" name="name" required value="{{ subscription.name if subscription else '' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Anbieter</label>
+                <input type="text" name="provider" value="{{ subscription.provider if subscription else '' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Kosten</label>
+                <input type="number" name="cost" step="0.01" value="{{ subscription.cost if subscription else '0.00' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Währung</label>
+                <select name="currency" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                    {% for c in ['EUR', 'USD', 'CHF', 'GBP'] %}
+                    <option value="{{ c }}" {% if subscription and subscription.currency == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Abrechnungszyklus</label>
+                <select name="billing_cycle" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                    {% for bc in [('monthly', 'Monatlich'), ('quarterly', 'Quartalsweise'), ('yearly', 'Jährlich'), ('one-time', 'Einmalig')] %}
+                    <option value="{{ bc[0] }}" {% if subscription and subscription.billing_cycle == bc[0] %}selected{% endif %}>{{ bc[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Startdatum</label>
+                <input type="date" name="start_date" value="{{ subscription.start_date if subscription else '' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Nächste Verlängerung</label>
+                <input type="date" name="next_renewal" value="{{ subscription.next_renewal if subscription else '' }}"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Status</label>
+            <select name="status" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                {% for s in [('active', 'Aktiv'), ('paused', 'Pausiert'), ('cancelled', 'Gekündigt'), ('expired', 'Abgelaufen')] %}
+                <option value="{{ s[0] }}" {% if subscription and subscription.status == s[0] %}selected{% endif %}>{{ s[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" name="auto_renew" id="auto_renew" value="true"
+                {% if not subscription or subscription.auto_renew %}checked{% endif %}
+                class="rounded border-gray-300 text-orange focus:ring-orange">
+            <label for="auto_renew" class="text-sm">Automatisch verlängern</label>
+        </div>
+
+        <!-- Icon Picker -->
+        <div>
+            <label class="block text-sm font-medium mb-1">Icon</label>
+            <input type="hidden" name="icon_id" id="icon_id_input"
+                   value="{{ subscription.icon_id if subscription else '' }}">
+            <div class="flex items-center gap-3">
+                <div id="selected-icon-preview"
+                     class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-navy flex items-center justify-center text-gray-400 overflow-hidden">
+                    {% if subscription and subscription.icon_id %}
+                    <span class="text-xs font-bold">{{ subscription.icon_id[:2].upper() }}</span>
+                    {% else %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                <button type="button" onclick="toggleIconPicker()"
+                    class="text-sm text-orange hover:underline">Icon wählen</button>
+                {% if subscription and subscription.icon_id %}
+                <button type="button" onclick="clearIcon()"
+                    class="text-sm text-gray-400 hover:text-red-500">Entfernen</button>
+                {% endif %}
+            </div>
+            <div id="icon-picker" class="hidden mt-3">
+                <input type="search" placeholder="Icons suchen …" oninput="filterIcons(this.value)"
+                    class="w-full mb-2 px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">
+                <div id="icon-grid" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1"></div>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Notizen</label>
+            <textarea name="notes" rows="3"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange dark:bg-navy dark:border-navy-light dark:text-creme">{{ subscription.notes if subscription and subscription.notes else '' }}</textarea>
+        </div>
+
+        <div class="flex space-x-4">
+            <button type="submit"
+                class="bg-orange hover:bg-orange-hover text-white font-semibold py-2 px-6 rounded-lg transition">
+                {{ 'Speichern' if subscription else 'Anlegen' }}
+            </button>
+            <a href="/subscriptions" class="py-2 px-6 rounded-lg border hover:bg-gray-50 dark:hover:bg-navy transition">Abbrechen</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let allIcons = [];
+async function loadIcons() {
+    if (allIcons.length) return;
+    const r = await fetch('/api/v1/icons/');
+    allIcons = await r.json();
+    renderIcons(allIcons);
+}
+function renderIcons(icons) {
+    const grid = document.getElementById('icon-grid');
+    grid.innerHTML = icons.map(i =>
+        `<button type="button" title="${i.name}" onclick="selectIcon('${i.id}','${i.name}','${i.color}')"
+            class="w-10 h-10 rounded-lg overflow-hidden border-2 hover:border-orange transition"
+            style="border-color: transparent">
+            <div style="background:${i.color};width:100%;height:100%;display:flex;align-items:center;justify-content:center">
+                <span style="color:white;font-size:11px;font-weight:bold">${i.name.slice(0,2).toUpperCase()}</span>
+            </div>
+        </button>`
+    ).join('');
+}
+function filterIcons(q) {
+    const filtered = q ? allIcons.filter(i => i.name.toLowerCase().includes(q.toLowerCase())) : allIcons;
+    renderIcons(filtered);
+}
+function toggleIconPicker() {
+    const el = document.getElementById('icon-picker');
+    el.classList.toggle('hidden');
+    if (!el.classList.contains('hidden')) loadIcons();
+}
+function selectIcon(id, name, color) {
+    document.getElementById('icon_id_input').value = id;
+    document.getElementById('selected-icon-preview').innerHTML =
+        `<div style="background:${color};width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:8px">
+            <span style="color:white;font-size:11px;font-weight:bold">${name.slice(0,2).toUpperCase()}</span>
+        </div>`;
+    document.getElementById('icon-picker').classList.add('hidden');
+}
+function clearIcon() {
+    document.getElementById('icon_id_input').value = '';
+    document.getElementById('selected-icon-preview').innerHTML =
+        `<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
+        </svg>`;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Konten{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-heading font-bold">Konten</h1>
+        <a href="/accounts/new" class="bg-orange hover:bg-orange/90 text-white px-4 py-2 rounded-lg font-medium min-h-[44px] flex items-center">+ Konto hinzufügen</a>
+    </div>
+
+    {% if total_balance is defined %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-4 mb-6">
+        <span class="text-sm text-gray-500 dark:text-gray-400">Gesamtguthaben</span>
+        <span class="text-2xl font-bold ml-2">€ {{ "%.2f"|format(total_balance) }}</span>
+    </div>
+    {% endif %}
+
+    {% if accounts %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for acc in accounts %}
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5 relative">
+            {% if acc.is_primary %}
+            <span class="absolute top-3 right-3 text-xs bg-orange/20 text-orange px-2 py-1 rounded-full">Hauptkonto</span>
+            {% endif %}
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg
+                    {% if acc.type == 'checking' %}bg-blue-100 text-blue-600{% elif acc.type == 'savings' %}bg-green-100 text-green-600{% elif acc.type == 'investment' %}bg-purple-100 text-purple-600{% else %}bg-yellow-100 text-yellow-600{% endif %}">
+                    {% if acc.type == 'checking' %}🏦{% elif acc.type == 'savings' %}💰{% elif acc.type == 'investment' %}📈{% else %}🔒{% endif %}
+                </div>
+                <div>
+                    <h3 class="font-semibold">{{ acc.name }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ acc.bank_name }}</p>
+                </div>
+            </div>
+            <div class="text-2xl font-bold mb-1 {% if acc.balance >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                € {{ "%.2f"|format(acc.balance) }}
+            </div>
+            {% if acc.interest_rate > 0 %}
+            <p class="text-sm text-gray-500">{{ acc.interest_rate }}% p.a.</p>
+            {% endif %}
+            <div class="flex gap-2 mt-4">
+                <a href="/accounts/{{ acc.id }}/edit" class="text-sm text-orange hover:underline">Bearbeiten</a>
+                <form method="POST" action="/accounts/{{ acc.id }}/delete" class="inline" onsubmit="return confirm('Konto wirklich löschen?')">
+                    <button type="submit" class="text-sm text-red-500 hover:underline">Löschen</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8 text-center">
+        <p class="text-gray-500 dark:text-gray-400 mb-4">Noch keine Konten angelegt.</p>
+        <a href="/accounts/new" class="bg-orange hover:bg-orange/90 text-white px-6 py-2 rounded-lg font-medium">Erstes Konto anlegen</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

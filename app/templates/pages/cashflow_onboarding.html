@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block title %}Cashflow Setup — Schritt {{ step }}/6{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-8">
+    <!-- Progress Steps 1-6 -->
+    <div class="flex items-center justify-center gap-2 mb-8">
+        {% for i in [1, 2, 3, 4, 5, 6] %}
+        <div class="flex items-center gap-1">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
+                {% if step == i %}bg-orange text-white{% elif step > i %}bg-green-500 text-white{% else %}bg-gray-200 dark:bg-navy text-gray-500{% endif %}">
+                {% if step > i %}&#10003;{% else %}{{ i }}{% endif %}
+            </div>
+            {% if i < 6 %}
+            <div class="w-6 h-0.5 {% if step > i %}bg-green-500{% else %}bg-gray-200 dark:bg-navy{% endif %}"></div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8">
+
+        {% if step == 1 %}
+        <!-- ── Step 1: Konten ── -->
+        <h1 class="text-2xl font-heading font-bold mb-2">Deine Konten</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Lege dein Hauptkonto an. Weitere Konten kannst du sp&auml;ter hinzuf&uuml;gen.</p>
+        <form method="POST" action="/cashflow-onboarding/step1" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Kontoname *</label>
+                <input type="text" name="account_name" placeholder="z.B. Girokonto Sparkasse" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Kontotyp</label>
+                    <select name="account_type"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                        <option value="checking">Girokonto</option>
+                        <option value="savings">Sparkonto</option>
+                        <option value="investment">Depot</option>
+                        <option value="deposit">Festgeld</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Kontostand &euro;</label>
+                    <input type="number" name="balance" step="0.01" value="0"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Bank</label>
+                <input type="text" name="bank_name" placeholder="z.B. Sparkasse, ING, DKB"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <button type="submit" class="w-full bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">
+                Weiter &rarr;
+            </button>
+        </form>
+
+        {% elif step == 2 %}
+        <!-- ── Step 2: Dauerauftr&auml;ge ── -->
+        <h1 class="text-2xl font-heading font-bold mb-2">Deine Dauerauftr&auml;ge</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Trage dein Gehalt und feste Ausgaben ein. Leere Felder werden &uuml;bersprungen.</p>
+        <form method="POST" action="/cashflow-onboarding/step2" class="space-y-4">
+            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <label class="block text-sm font-medium mb-1 text-green-700 dark:text-green-400">Gehalt (Einnahme) &euro;/Monat</label>
+                <input type="number" name="gehalt_amount" step="0.01" min="0" placeholder="z.B. 4500"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg space-y-3">
+                <p class="text-sm font-medium text-red-700 dark:text-red-400">Feste Ausgaben &euro;/Monat</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs mb-1">Miete</label>
+                        <input type="number" name="miete_amount" step="0.01" min="0" placeholder="1200"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">Versicherung</label>
+                        <input type="number" name="versicherung_amount" step="0.01" min="0" placeholder="100"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">KFZ</label>
+                        <input type="number" name="kfz_amount" step="0.01" min="0" placeholder="85"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">Sparplan</label>
+                        <input type="number" name="sparplan_amount" step="0.01" min="0" placeholder="500"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="/cashflow-onboarding/step1" class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">&larr; Zur&uuml;ck</a>
+                <button type="submit" class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">Weiter &rarr;</button>
+            </div>
+        </form>
+
+        {% elif step == 3 %}
+        <!-- ── Step 3: Lastschriften ── -->
+        <h1 class="text-2xl font-heading font-bold mb-2">Deine Lastschriften</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Welche Lastschriften werden monatlich abgebucht? Leere Felder werden &uuml;bersprungen.</p>
+        <form method="POST" action="/cashflow-onboarding/step3" class="space-y-3">
+            {% for item in [("strom", "Strom", "85"), ("gas", "Gas", "65"), ("internet", "Internet", "45"), ("gez", "GEZ/Rundfunk", "18.36"), ("fitness", "Fitnessstudio", "35"), ("handy", "Handy", "25")] %}
+            <div class="flex items-center gap-3">
+                <label class="w-28 text-sm">{{ item[1] }}</label>
+                <input type="number" name="{{ item[0] }}_amount" step="0.01" min="0" placeholder="{{ item[2] }}"
+                    class="flex-1 border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                <span class="text-xs text-gray-400">&euro;/M</span>
+            </div>
+            {% endfor %}
+            <div class="flex gap-3 pt-2">
+                <a href="/cashflow-onboarding/step2" class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">&larr; Zur&uuml;ck</a>
+                <button type="submit" class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">Weiter &rarr;</button>
+            </div>
+        </form>
+
+        {% elif step == 4 %}
+        <!-- ── Step 4: Geldanlagen ── -->
+        <h1 class="text-2xl font-heading font-bold mb-2">Deine Geldanlagen</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Hast du ETFs, Festgeld oder andere Anlagen? Alles optional.</p>
+        <form method="POST" action="/cashflow-onboarding/step4" class="space-y-4">
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-3">
+                <div>
+                    <label class="block text-sm font-medium mb-1">ETF-Sparplan</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" name="etf_value" step="0.01" min="0" placeholder="Aktueller Wert"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                        <input type="number" name="etf_invested" step="0.01" min="0" placeholder="Einbezahlt"
+                            class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tagesgeld / Festgeld</label>
+                    <input type="number" name="tagesgeld_value" step="0.01" min="0" placeholder="Aktueller Wert"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="/cashflow-onboarding/step3" class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">&larr; Zur&uuml;ck</a>
+                <button type="submit" class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">Weiter &rarr;</button>
+            </div>
+        </form>
+
+        {% elif step == 5 %}
+        <!-- ── Step 5: Sparziele ── -->
+        <h1 class="text-2xl font-heading font-bold mb-2">Deine 3 Sparziele</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Setze dir Ziele f&uuml;r Notgroschen, Urlaub und Rente. Alles optional.</p>
+        <form method="POST" action="/cashflow-onboarding/step5" class="space-y-4">
+            <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg space-y-2">
+                <p class="text-sm font-medium text-yellow-700 dark:text-yellow-400">Notgroschen</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" name="notgroschen_target" step="0.01" min="0" placeholder="Ziel (z.B. 10000)"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    <input type="number" name="notgroschen_current" step="0.01" min="0" placeholder="Aktuell gespart"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-2">
+                <p class="text-sm font-medium text-blue-700 dark:text-blue-400">Urlaub / Luxus</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" name="urlaub_target" step="0.01" min="0" placeholder="Ziel (z.B. 3000)"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    <input type="number" name="urlaub_current" step="0.01" min="0" placeholder="Aktuell gespart"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg space-y-2">
+                <p class="text-sm font-medium text-green-700 dark:text-green-400">Rente</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" name="rente_target" step="0.01" min="0" placeholder="Ziel (z.B. 500000)"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                    <input type="number" name="rente_current" step="0.01" min="0" placeholder="Aktuell gespart"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme text-sm focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="/cashflow-onboarding/step4" class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">&larr; Zur&uuml;ck</a>
+                <button type="submit" class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">Weiter &rarr;</button>
+            </div>
+        </form>
+
+        {% elif step == 6 %}
+        <!-- ── Step 6: &Uuml;bersicht ── -->
+        <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-heading font-bold mb-2">Deine Finanz-&Uuml;bersicht</h1>
+            <p class="text-gray-500 dark:text-creme/60 mb-6">Alles eingerichtet! Hier ist deine Zusammenfassung.</p>
+        </div>
+
+        <div class="space-y-3 mb-6">
+            <div class="flex justify-between p-3 bg-gray-50 dark:bg-navy rounded-lg">
+                <span class="text-sm">Konten</span>
+                <span class="font-medium">{{ account_count }} Konto{% if account_count != 1 %}en{% endif %}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-gray-50 dark:bg-navy rounded-lg">
+                <span class="text-sm">Dauerauftr&auml;ge</span>
+                <span class="font-medium">{{ standing_order_count }}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-gray-50 dark:bg-navy rounded-lg">
+                <span class="text-sm">Lastschriften</span>
+                <span class="font-medium">{{ direct_debit_count }}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-gray-50 dark:bg-navy rounded-lg">
+                <span class="text-sm">Geldanlagen</span>
+                <span class="font-medium">{{ investment_count }}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-gray-50 dark:bg-navy rounded-lg">
+                <span class="text-sm">Sparziele</span>
+                <span class="font-medium">{{ savings_goal_count }}</span>
+            </div>
+            {% if summary %}
+            <div class="flex justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <span class="text-sm font-medium">Netto-Cashflow</span>
+                <span class="font-bold {% if summary.monthly_net >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                    {{ "%.2f"|format(summary.monthly_net) }} &euro;/Monat
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="POST" action="/cashflow-onboarding/complete">
+            <div class="flex gap-3">
+                <a href="/cashflow-onboarding/step5" class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">&larr; Zur&uuml;ck</a>
+                <button type="submit" class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">
+                    Dashboard starten! &rarr;
+                </button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

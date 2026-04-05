@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Suche{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Suche</h1>
+</div>
+
+<form method="GET" action="/search" class="mb-6">
+    <div class="flex gap-3">
+        <input type="search" name="q" value="{{ query }}" placeholder="Abonnements durchsuchen …"
+            autofocus
+            class="flex-1 border border-gray-300 dark:border-navy rounded-lg px-4 py-2
+                   bg-white dark:bg-navy text-gray-900 dark:text-creme
+                   focus:outline-none focus:ring-2 focus:ring-orange">
+        <button type="submit"
+            class="bg-orange hover:bg-orange-hover text-white font-medium px-6 py-2 rounded-lg transition min-h-[44px]">
+            Suchen
+        </button>
+    </div>
+</form>
+
+{% if query %}
+    {% if results %}
+    <p class="text-sm text-gray-500 dark:text-creme/60 mb-3">{{ results|length }} Ergebnis{% if results|length != 1 %}se{% endif %} für „{{ query }}"</p>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-navy border-b border-gray-200 dark:border-navy-light">
+                <tr>
+                    <th class="px-4 py-3 text-left font-semibold">Name</th>
+                    <th class="px-4 py-3 text-left font-semibold">Anbieter</th>
+                    <th class="px-4 py-3 text-left font-semibold">Kosten</th>
+                    <th class="px-4 py-3 text-left font-semibold">Status</th>
+                    <th class="px-4 py-3 text-left font-semibold"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-navy">
+            {% for sub in results %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-navy transition-colors">
+                    <td class="px-4 py-3 font-medium">{{ sub.name }}</td>
+                    <td class="px-4 py-3 text-gray-500 dark:text-creme/60">{{ sub.provider or '—' }}</td>
+                    <td class="px-4 py-3">{{ sub.cost }} {{ sub.currency }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                            {% if sub.status == 'active' %}bg-green-100 text-green-700
+                            {% elif sub.status == 'paused' %}bg-yellow-100 text-yellow-700
+                            {% elif sub.status == 'cancelled' %}bg-red-100 text-red-700
+                            {% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {{ sub.status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <a href="/subscriptions/{{ sub.id }}/edit"
+                            class="text-orange hover:underline text-xs">Bearbeiten</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-500 dark:text-creme/60">Keine Ergebnisse für „{{ query }}".</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

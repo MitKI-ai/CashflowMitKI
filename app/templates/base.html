@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Subscription Manager{% endblock %} - mitKI.ai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0A1A3A',
+                        'navy-light': '#132B5E',
+                        orange: '#F97316',
+                        'orange-hover': '#EA580C',
+                        creme: '#F8E3C7',
+                        'creme-light': '#FDF5EC',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy: #0A1A3A; --orange: #F97316; --creme: #F8E3C7; }
+    </style>
+    <script>
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.replace('light', 'dark');
+            }
+        })();
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-navy text-gray-900 dark:text-creme font-sans min-h-screen">
+    {% if user %}
+    <nav class="bg-white dark:bg-navy-light shadow-sm border-b border-gray-200 dark:border-navy">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/dashboard" class="flex items-center space-x-2">
+                        <span class="text-2xl font-heading font-bold text-orange">mitKI</span>
+                        <span class="text-sm text-gray-500 dark:text-creme">.ai</span>
+                    </a>
+                    <div class="hidden md:flex ml-10 space-x-2">
+                        <a href="/dashboard" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Dashboard</a>
+                        <a href="/accounts" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Konten</a>
+                        <a href="/transactions" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Haushaltsbuch</a>
+                        <a href="/cashflow" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Cashflow</a>
+                        <a href="/investments" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Anlagen</a>
+                        <a href="/savings-goals" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Sparziele</a>
+                        <a href="/retirement" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Rente</a>
+                        <a href="/reports" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Berichte</a>
+                        {% if user.role == 'admin' %}
+                        <a href="/settings" class="px-2 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Einstellungen</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Notification Bell -->
+                    <div class="relative" id="notification-bell">
+                        <button onclick="toggleNotifications()" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-navy relative" title="Benachrichtigungen">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none"></span>
+                        </button>
+                        <div id="notif-dropdown" class="hidden absolute right-0 mt-1 w-72 bg-white dark:bg-navy-light rounded-xl shadow-lg border border-gray-200 dark:border-navy z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 dark:border-navy flex justify-between items-center">
+                                <span class="text-sm font-medium">Benachrichtigungen</span>
+                                <button onclick="markAllRead()" class="text-xs text-orange hover:underline">Alle gelesen</button>
+                            </div>
+                            <ul id="notif-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-navy">
+                                <li class="px-4 py-3 text-sm text-gray-400">Keine Benachrichtigungen</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-navy" title="Dark Mode">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <span class="hidden sm:inline text-sm text-gray-600 dark:text-creme">{{ user.display_name or user.email }}</span>
+                    <span class="hidden sm:inline text-xs px-2 py-1 rounded-full bg-orange text-white">{{ user.role }}</span>
+                    <a href="/logout" class="text-sm text-gray-500 hover:text-red-500">Logout</a>
+                    <!-- Hamburger for mobile -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-navy"
+                        onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" aria-label="Menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-navy px-4 py-2 space-y-1">
+            <a href="/dashboard" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Dashboard</a>
+            <a href="/accounts" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Konten</a>
+            <a href="/standing-orders" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Daueraufträge</a>
+            <a href="/direct-debits" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Lastschriften</a>
+            <a href="/subscriptions" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Abos</a>
+            <a href="/transactions" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Haushaltsbuch</a>
+            <a href="/cashflow" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Cashflow</a>
+            <a href="/investments" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Anlagen</a>
+            <a href="/savings-goals" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Sparziele</a>
+            <a href="/retirement" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Rente</a>
+            <a href="/budget-alerts" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Budget-Warnungen</a>
+            <a href="/bookings" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Auto-Buchungen</a>
+            <a href="/reports" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Berichte</a>
+            {% if user.role == 'admin' %}
+            <a href="/settings" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-navy">Einstellungen</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if flash_message %}
+        <div class="mb-4 p-4 rounded-md bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            {{ flash_message }}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-navy-light mt-12 py-6 text-center text-sm text-gray-400">
+        cashflow.mitKI.ai v{{ version }} &mdash; <a href="https://www.cashflow.mitki.ai" class="hover:text-orange">mitKI.ai</a>
+    </footer>
+
+    <script>
+        // ── Notification polling ──────────────────────────────────────────────
+        function toggleNotifications() {
+            document.getElementById('notif-dropdown').classList.toggle('hidden');
+            fetchNotifications();
+        }
+        function fetchNotifications() {
+            fetch('/api/v1/notifications/')
+                .then(r => r.ok ? r.json() : [])
+                .then(data => {
+                    const list = document.getElementById('notif-list');
+                    if (!data.length) {
+                        list.innerHTML = '<li class="px-4 py-3 text-sm text-gray-400">Keine Benachrichtigungen</li>';
+                        return;
+                    }
+                    list.innerHTML = data.map(n =>
+                        `<li class="px-4 py-3 text-sm ${n.is_read ? 'text-gray-400' : 'font-medium'}">
+                            <p>${n.title}</p>
+                            <p class="text-xs text-gray-400">${n.message}</p>
+                        </li>`
+                    ).join('');
+                });
+        }
+        function markAllRead() {
+            fetch('/api/v1/notifications/mark-all-read', {method:'POST'})
+                .then(() => { updateUnreadBadge(); fetchNotifications(); });
+        }
+        function updateUnreadBadge() {
+            fetch('/api/v1/notifications/unread-count')
+                .then(r => r.ok ? r.json() : {count:0})
+                .then(data => {
+                    const badge = document.getElementById('notif-badge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count > 9 ? '9+' : data.count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                });
+        }
+        // Poll every 30 seconds
+        updateUnreadBadge();
+        setInterval(updateUnreadBadge, 30000);
+        // Close dropdown on outside click
+        document.addEventListener('click', function(e) {
+            const bell = document.getElementById('notification-bell');
+            if (bell && !bell.contains(e.target)) {
+                document.getElementById('notif-dropdown').classList.add('hidden');
+            }
+        });
+    </script>
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+        }
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon') && (document.getElementById('theme-icon').textContent = '☀️');
+            }
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

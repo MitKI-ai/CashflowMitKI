@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-heading font-bold mb-6">Dashboard</h1>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <p class="text-sm text-gray-500 dark:text-creme">Aktive Abos</p>
+        <p class="text-3xl font-bold text-navy dark:text-white mt-1">{{ stats.active_count }}</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <p class="text-sm text-gray-500 dark:text-creme">Monatliche Kosten</p>
+        <p class="text-3xl font-bold text-orange mt-1">{{ "%.2f"|format(stats.monthly_cost) }} {{ stats.currency }}</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <p class="text-sm text-gray-500 dark:text-creme">Verlängerung (7 Tage)</p>
+        <p class="text-3xl font-bold text-navy dark:text-white mt-1">{{ stats.renewals_7d }}</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <p class="text-sm text-gray-500 dark:text-creme">Gesamt Abos</p>
+        <p class="text-3xl font-bold text-navy dark:text-white mt-1">{{ stats.total_count }}</p>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Kosten nach Zyklus</h2>
+        <canvas id="chartBilling" height="200"></canvas>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Status-Verteilung</h2>
+        <canvas id="chartStatus" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Renewals next 30 days -->
+{% if renewals_30d %}
+<div class="bg-white dark:bg-navy-light rounded-xl shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-navy">
+        <h2 class="font-heading font-semibold">Verlängerungen (30 Tage)</h2>
+    </div>
+    <ul class="divide-y divide-gray-100 dark:divide-navy">
+        {% for sub in renewals_30d %}
+        <li class="px-6 py-3 flex justify-between text-sm">
+            <span class="font-medium">{{ sub.name }}</span>
+            <span class="text-gray-500">{{ sub.next_renewal }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Recent Subscriptions -->
+<div class="bg-white dark:bg-navy-light rounded-xl shadow">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-navy flex justify-between items-center">
+        <h2 class="font-heading font-semibold">Letzte Abonnements</h2>
+        <a href="/subscriptions" class="text-orange text-sm hover:underline">Alle anzeigen →</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50 dark:bg-navy text-sm">
+                <tr>
+                    <th class="text-left px-6 py-3">Name</th>
+                    <th class="text-left px-6 py-3">Anbieter</th>
+                    <th class="text-left px-6 py-3">Kosten</th>
+                    <th class="text-left px-6 py-3">Zyklus</th>
+                    <th class="text-left px-6 py-3">Status</th>
+                    <th class="text-left px-6 py-3">Verlängerung</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-navy">
+                {% for sub in recent_subs %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-navy">
+                    <td class="px-6 py-4 font-medium">{{ sub.name }}</td>
+                    <td class="px-6 py-4 text-gray-500">{{ sub.provider }}</td>
+                    <td class="px-6 py-4">{{ "%.2f"|format(sub.cost) }} {{ sub.currency }}</td>
+                    <td class="px-6 py-4 text-sm">{{ sub.billing_cycle }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            {% if sub.status == 'active' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                            {% elif sub.status == 'cancelled' %}bg-red-100 text-red-800
+                            {% elif sub.status == 'paused' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ sub.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ sub.next_renewal or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                        Noch keine Abonnements. <a href="/subscriptions/new" class="text-orange hover:underline">Erstes Abo anlegen</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#F8E3C7' : '#374151';
+    const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+    new Chart(document.getElementById('chartBilling'), {
+        type: 'bar',
+        data: {
+            labels: {{ chart_billing_labels | tojson }},
+            datasets: [{
+                label: 'Kosten (\u20ac)',
+                data: {{ chart_billing_data | tojson }},
+                backgroundColor: ['#F97316', '#132B5E', '#0A1A3A'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                y: { ticks: { color: textColor }, grid: { color: gridColor } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('chartStatus'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_status_labels | tojson }},
+            datasets: [{
+                data: {{ chart_status_data | tojson }},
+                backgroundColor: ['#22c55e', '#eab308', '#ef4444', '#3b82f6'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
+        }
+    });
+})();
+</script>
+{% endblock %}

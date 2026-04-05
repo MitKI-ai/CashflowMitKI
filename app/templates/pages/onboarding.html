@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Willkommen — Onboarding{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-8">
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-center gap-4 mb-8">
+        {% for i in [1, 2, 3] %}
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+                {% if step == i %}bg-orange text-white{% elif step > i %}bg-green-500 text-white{% else %}bg-gray-200 dark:bg-navy text-gray-500{% endif %}">
+                {% if step > i %}✓{% else %}{{ i }}{% endif %}
+            </div>
+            {% if i < 3 %}
+            <div class="w-12 h-0.5 {% if step > i %}bg-green-500{% else %}bg-gray-200 dark:bg-navy{% endif %}"></div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-8">
+        {% if step == 1 %}
+        <h1 class="text-2xl font-heading font-bold mb-2">Willkommen!</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Lass uns deine Organisation einrichten.</p>
+        <form method="POST" action="/onboarding/step1" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name der Organisation *</label>
+                <input type="text" name="org_name" value="{{ tenant.name if tenant else '' }}" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Währung</label>
+                <select name="currency"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                    {% for code in ['EUR', 'USD', 'GBP', 'CHF'] %}
+                    <option value="{{ code }}">{{ code }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit"
+                class="w-full bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">
+                Weiter →
+            </button>
+        </form>
+
+        {% elif step == 2 %}
+        <h1 class="text-2xl font-heading font-bold mb-2">Erstes Abonnement</h1>
+        <p class="text-gray-500 dark:text-creme/60 mb-6">Füge dein erstes Abonnement hinzu (optional).</p>
+        <form method="POST" action="/onboarding/step2" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name des Abonnements</label>
+                <input type="text" name="name" placeholder="z.B. Netflix, Spotify …"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Kosten</label>
+                    <input type="number" name="cost" step="0.01" min="0" value="0"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                               bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Abrechnungszyklus</label>
+                    <select name="billing_cycle"
+                        class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                               bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                        <option value="monthly">Monatlich</option>
+                        <option value="yearly">Jährlich</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="/onboarding/step1"
+                    class="flex-1 text-center border border-gray-300 dark:border-navy py-3 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">
+                    ← Zurück
+                </a>
+                <button type="submit"
+                    class="flex-1 bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">
+                    Weiter →
+                </button>
+            </div>
+        </form>
+
+        {% elif step == 3 %}
+        <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-heading font-bold mb-2">Alles bereit!</h1>
+            <p class="text-gray-500 dark:text-creme/60 mb-6">Dein Subscription Manager ist eingerichtet.</p>
+            <div class="flex flex-col gap-3">
+                <a href="/invite" class="border border-orange text-orange hover:bg-orange/5 font-medium py-3 rounded-lg transition">
+                    Team einladen
+                </a>
+                <form method="POST" action="/onboarding/complete">
+                    <button type="submit"
+                        class="w-full bg-orange hover:bg-orange-hover text-white font-medium py-3 rounded-lg transition">
+                        Zum Dashboard →
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

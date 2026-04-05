@@ -1,0 +1,16 @@
+project_name: "Subscription Manager"
+project_type: "web-app"
+project_level: 3
+last_updated: "2026-03-27"
+
+workflows:
+  product_brief: "skipped"
+  prd: "docs/prd-subscription-manager-2026-03-27.md"
+  tech_spec: null
+  architecture: "docs/architecture-subscription-manager-2026-03-27.md"
+  sprint_planning: "docs/sprint-plan-subscription-manager-2026-03-29.md"
+  stories_created: 0
+  stories_completed: 0
+
+current_phase: "implementation"
+next_recommended: "dev-story"

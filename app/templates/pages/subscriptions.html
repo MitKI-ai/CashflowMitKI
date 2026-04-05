@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Abonnements{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Abonnements</h1>
+    <a href="/subscriptions/new"
+        class="bg-orange hover:bg-orange-hover text-white px-4 py-2 rounded-lg font-medium transition">
+        + Neues Abo
+    </a>
+</div>
+
+<!-- Filter -->
+<div class="flex flex-wrap gap-2 mb-4">
+    <a href="/subscriptions" class="px-3 py-1 rounded-full text-sm {% if not filter_status and not filter_category_id %}bg-orange text-white{% else %}bg-gray-200 dark:bg-navy{% endif %}">Alle</a>
+    <a href="/subscriptions?status=active" class="px-3 py-1 rounded-full text-sm {% if filter_status == 'active' %}bg-orange text-white{% else %}bg-gray-200 dark:bg-navy{% endif %}">Aktiv</a>
+    <a href="/subscriptions?status=paused" class="px-3 py-1 rounded-full text-sm {% if filter_status == 'paused' %}bg-orange text-white{% else %}bg-gray-200 dark:bg-navy{% endif %}">Pausiert</a>
+    <a href="/subscriptions?status=cancelled" class="px-3 py-1 rounded-full text-sm {% if filter_status == 'cancelled' %}bg-orange text-white{% else %}bg-gray-200 dark:bg-navy{% endif %}">Gekündigt</a>
+    {% for cat in categories %}
+    <a href="/subscriptions?category_id={{ cat.id }}"
+        class="px-3 py-1 rounded-full text-sm {% if filter_category_id == cat.id %}ring-2 ring-offset-1 ring-orange text-white{% else %}bg-gray-200 dark:bg-navy{% endif %}"
+        style="{% if filter_category_id == cat.id %}background-color: {{ cat.color }};{% endif %}">
+        {% if cat.icon %}{{ cat.icon }} {% endif %}{{ cat.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-x-auto">
+    <table class="w-full">
+        <thead class="bg-gray-50 dark:bg-navy text-sm">
+            <tr>
+                <th class="text-left px-6 py-3">Name</th>
+                <th class="text-left px-6 py-3">Anbieter</th>
+                <th class="text-left px-6 py-3">Kosten</th>
+                <th class="text-left px-6 py-3">Zyklus</th>
+                <th class="text-left px-6 py-3">Kategorien</th>
+                <th class="text-left px-6 py-3">Status</th>
+                <th class="text-left px-6 py-3">Verlängerung</th>
+                <th class="text-left px-6 py-3">Aktionen</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-navy">
+            {% for sub in subscriptions %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-navy">
+                <td class="px-6 py-4 font-medium">{{ sub.name }}</td>
+                <td class="px-6 py-4 text-gray-500">{{ sub.provider }}</td>
+                <td class="px-6 py-4">{{ "%.2f"|format(sub.cost) }} {{ sub.currency }}</td>
+                <td class="px-6 py-4 text-sm">{{ sub.billing_cycle }}</td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                        {% for cat in sub.categories %}
+                        <span class="px-2 py-0.5 rounded-full text-xs text-white font-medium" style="background-color: {{ cat.color }}">
+                            {% if cat.icon %}{{ cat.icon }} {% endif %}{{ cat.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                        {% if sub.status == 'active' %}bg-green-100 text-green-800
+                        {% elif sub.status == 'cancelled' %}bg-red-100 text-red-800
+                        {% elif sub.status == 'paused' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ sub.status }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500">{{ sub.next_renewal or '-' }}</td>
+                <td class="px-6 py-4 text-sm space-x-2">
+                    <a href="/subscriptions/{{ sub.id }}/edit" class="text-orange hover:underline">Bearbeiten</a>
+                    <form method="POST" action="/subscriptions/{{ sub.id }}/delete" class="inline"
+                        onsubmit="return confirm('Wirklich löschen?')">
+                        <button type="submit" class="text-red-500 hover:underline">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="px-6 py-8 text-center text-gray-400">
+                    Keine Abonnements gefunden. <a href="/subscriptions/new" class="text-orange hover:underline">Jetzt anlegen</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

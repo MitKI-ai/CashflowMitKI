@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Analytics Dashboard</h1>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+        <p class="text-sm text-gray-500 dark:text-gray-400">MRR</p>
+        <p class="text-2xl font-bold mt-1">{{ summary.mrr | round(2) }} €</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+        <p class="text-sm text-gray-500 dark:text-gray-400">ARR</p>
+        <p class="text-2xl font-bold mt-1">{{ summary.arr | round(2) }} €</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Aktiv</p>
+        <p class="text-2xl font-bold mt-1">{{ summary.active_count }}</p>
+    </div>
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Churn Rate</p>
+        <p class="text-2xl font-bold mt-1">{{ summary.churn_rate }} %</p>
+    </div>
+</div>
+
+<!-- MRR History Table -->
+<div class="bg-white dark:bg-navy-light rounded-xl shadow overflow-x-auto">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-navy">
+        <h2 class="font-semibold text-lg">MRR Verlauf (6 Monate)</h2>
+    </div>
+    <table class="w-full">
+        <thead class="bg-gray-50 dark:bg-navy text-sm">
+            <tr>
+                <th class="text-left px-6 py-3">Monat</th>
+                <th class="text-right px-6 py-3">MRR (€)</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-navy">
+            {% for row in mrr_history %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-navy">
+                <td class="px-6 py-3 font-mono text-sm">{{ row.month }}</td>
+                <td class="px-6 py-3 text-right font-semibold">{{ row.mrr | round(2) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

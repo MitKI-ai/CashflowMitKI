@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Cashflow Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 class="text-2xl font-heading font-bold">Cashflow Dashboard</h1>
+        <div class="text-sm text-gray-500 dark:text-creme">Monatliche Prognose</div>
+    </div>
+
+    <!-- Net Cashflow Hero -->
+    <div class="bg-white dark:bg-navy-light rounded-2xl shadow p-6 text-center">
+        <p class="text-sm text-gray-500 dark:text-creme mb-1">Monatlicher Netto-Cashflow</p>
+        <p class="text-4xl font-heading font-bold {% if summary.monthly_net >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+            {{ "%.2f"|format(summary.monthly_net) }} &euro;
+        </p>
+        <p class="text-xs text-gray-400 mt-1">Einnahmen &minus; Ausgaben &minus; Sparrate</p>
+    </div>
+
+    <!-- Income / Expense / Savings Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Einnahmen</p>
+            <p class="text-2xl font-bold text-green-600">+{{ "%.2f"|format(summary.monthly_income) }} &euro;</p>
+            <p class="text-xs text-gray-400 mt-1">Dauerauftr&auml;ge (Gehalt, etc.)</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Ausgaben</p>
+            <p class="text-2xl font-bold text-red-500">
+                -{{ "%.2f"|format(summary.monthly_expenses + summary.monthly_direct_debits + summary.monthly_subscriptions) }} &euro;
+            </p>
+            <div class="text-xs text-gray-400 mt-1 space-y-0.5">
+                <p>Dauerauftr&auml;ge: {{ "%.2f"|format(summary.monthly_expenses) }} &euro;</p>
+                <p>Lastschriften: {{ "%.2f"|format(summary.monthly_direct_debits) }} &euro;</p>
+                <p>Abos: {{ "%.2f"|format(summary.monthly_subscriptions) }} &euro;</p>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Sparrate</p>
+            <p class="text-2xl font-bold text-blue-600">{{ "%.2f"|format(summary.monthly_savings) }} &euro;</p>
+            <p class="text-xs text-gray-400 mt-1">Sparpl&auml;ne &amp; Transfers</p>
+        </div>
+    </div>
+
+    <!-- Cashflow Chart -->
+    <div class="bg-white dark:bg-navy-light rounded-2xl shadow p-6">
+        <h2 class="text-lg font-heading font-semibold mb-4">Cashflow-Aufteilung</h2>
+        <canvas id="cashflowChart" class="w-full" style="max-height: 320px;"></canvas>
+    </div>
+
+    <!-- Net Worth Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Konten</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(accounts_total) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Geldanlagen</p>
+            <p class="text-2xl font-bold">{{ "%.2f"|format(investments_total) }} &euro;</p>
+        </div>
+        <div class="bg-white dark:bg-navy-light rounded-xl shadow p-5">
+            <p class="text-sm text-gray-500 dark:text-creme">Gesamtverm&ouml;gen</p>
+            <p class="text-2xl font-bold text-orange">{{ "%.2f"|format(net_worth) }} &euro;</p>
+        </div>
+    </div>
+
+    <!-- Savings Goals -->
+    {% if savings_goals %}
+    <div class="bg-white dark:bg-navy-light rounded-2xl shadow p-6">
+        <h2 class="text-lg font-heading font-semibold mb-4">Sparziele</h2>
+        <div class="space-y-4">
+            {% for goal in savings_goals %}
+            {% set pct = (goal.current_amount / goal.target_amount * 100) if goal.target_amount else 0 %}
+            {% set pct = [pct, 100] | min %}
+            <div>
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium">{{ goal.name }}
+                        <span class="text-xs text-gray-400">({{ goal.type }})</span>
+                    </span>
+                    <span>{{ "%.0f"|format(goal.current_amount) }} / {{ "%.0f"|format(goal.target_amount) }} &euro;</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-navy rounded-full h-3">
+                    <div class="h-3 rounded-full
+                        {% if goal.type == 'emergency' %}bg-yellow-500
+                        {% elif goal.type == 'vacation_luxury' %}bg-blue-500
+                        {% else %}bg-green-500{% endif %}"
+                        style="width: {{ "%.1f"|format(pct) }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#F8E3C7' : '#374151';
+
+    new Chart(document.getElementById('cashflowChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Dauerauftr\u00e4ge', 'Lastschriften', 'Abos', 'Sparrate', 'Frei verf\u00fcgbar'],
+            datasets: [{
+                data: [
+                    {{ summary.monthly_expenses }},
+                    {{ summary.monthly_direct_debits }},
+                    {{ summary.monthly_subscriptions }},
+                    {{ summary.monthly_savings }},
+                    Math.max(0, {{ summary.monthly_net }})
+                ],
+                backgroundColor: ['#EF4444', '#F97316', '#8B5CF6', '#3B82F6', '#22C55E'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: textColor } },
+            }
+        }
+    });
+</script>
+{% endblock %}

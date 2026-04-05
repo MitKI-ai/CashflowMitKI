@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Mein Profil{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Mein Profil</h1>
+</div>
+
+<div class="max-w-2xl space-y-6">
+    <!-- Profile Info -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Persönliche Informationen</h2>
+        {% if error %}
+        <div class="mb-4 p-3 rounded-md bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-sm">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="mb-4 p-3 rounded-md bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm">{{ success }}</div>
+        {% endif %}
+        <form method="POST" action="/profile" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Anzeigename</label>
+                <input type="text" name="display_name" value="{{ user.display_name }}" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">E-Mail</label>
+                <input type="email" name="email" value="{{ user.email }}" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-creme/50">
+                <span>Rolle: <strong class="text-gray-800 dark:text-creme">{{ user.role }}</strong></span>
+            </div>
+            <button type="submit"
+                class="bg-orange hover:bg-orange-hover text-white font-medium px-6 py-2 rounded-lg transition min-h-[44px]">
+                Speichern
+            </button>
+        </form>
+    </div>
+
+    <!-- Change Password -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Passwort ändern</h2>
+        <form method="POST" action="/profile/password" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Aktuelles Passwort</label>
+                <input type="password" name="current_password" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Neues Passwort</label>
+                <input type="password" name="new_password" required minlength="8"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Passwort bestätigen</label>
+                <input type="password" name="confirm_password" required minlength="8"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <button type="submit"
+                class="bg-orange hover:bg-orange-hover text-white font-medium px-6 py-2 rounded-lg transition min-h-[44px]">
+                Passwort ändern
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

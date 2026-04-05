@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Einstellungen{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-heading font-bold">Einstellungen</h1>
+</div>
+
+<div class="max-w-2xl">
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6">
+        <h2 class="font-heading font-semibold mb-4">Organisation</h2>
+        {% if error %}
+        <div class="mb-4 p-3 rounded-md bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-sm">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="mb-4 p-3 rounded-md bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm">{{ success }}</div>
+        {% endif %}
+        <form method="POST" action="/settings" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Name der Organisation *</label>
+                <input type="text" name="name" value="{{ tenant.name }}" required
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Währung</label>
+                <select name="currency"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                    {% for code in ['EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CAD', 'AUD'] %}
+                    <option value="{{ code }}" {% if tenant.currency == code %}selected{% endif %}>{{ code }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Sprache / Locale</label>
+                <select name="locale"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2
+                           bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                    <option value="de" {% if tenant.locale == 'de' %}selected{% endif %}>Deutsch (de)</option>
+                    <option value="en" {% if tenant.locale == 'en' %}selected{% endif %}>English (en)</option>
+                </select>
+            </div>
+            <button type="submit"
+                class="bg-orange hover:bg-orange-hover text-white font-medium px-6 py-2 rounded-lg transition min-h-[44px]">
+                Speichern
+            </button>
+        </form>
+    </div>
+
+    <!-- LLM Provider Configuration -->
+    <div class="bg-white dark:bg-navy-light rounded-xl shadow p-6 mt-6">
+        <h2 class="font-heading font-semibold mb-4">AI / LLM Provider</h2>
+        <p class="text-sm text-gray-500 dark:text-creme/60 mb-4">Konfiguriere deinen API-Key f&uuml;r den AI Chat-Assistenten.</p>
+        <div id="llm-config" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Provider</label>
+                <select id="llm-provider"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+                    <option value="anthropic">Anthropic (Claude)</option>
+                    <option value="openrouter">OpenRouter</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">API-Key</label>
+                <input type="password" id="llm-api-key" placeholder="sk-ant-... oder sk-or-..."
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Modell</label>
+                <input type="text" id="llm-model" value="claude-sonnet-4-20250514"
+                    class="w-full border border-gray-300 dark:border-navy rounded-lg px-3 py-2 bg-white dark:bg-navy text-gray-900 dark:text-creme focus:outline-none focus:ring-2 focus:ring-orange">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="saveLLMProvider()"
+                    class="bg-orange hover:bg-orange-hover text-white font-medium px-6 py-2 rounded-lg transition">
+                    Speichern
+                </button>
+                <button onclick="testLLMConnection()"
+                    class="border border-gray-300 dark:border-navy px-6 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-navy">
+                    Verbindung testen
+                </button>
+            </div>
+            <div id="llm-status" class="text-sm hidden"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function saveLLMProvider() {
+        const provider = document.getElementById('llm-provider').value;
+        const apiKey = document.getElementById('llm-api-key').value;
+        const modelId = document.getElementById('llm-model').value;
+        if (!apiKey) { showStatus('Bitte API-Key eingeben', 'red'); return; }
+        const r = await fetch('/api/v1/llm/providers', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({provider, api_key: apiKey, model_id: modelId}),
+        });
+        if (r.ok) { showStatus('Provider gespeichert!', 'green'); }
+        else { showStatus('Fehler beim Speichern', 'red'); }
+    }
+    async function testLLMConnection() {
+        showStatus('Teste Verbindung...', 'gray');
+        const r = await fetch('/api/v1/llm/test', {method: 'POST'});
+        if (r.ok) {
+            const data = await r.json();
+            showStatus('Verbindung OK! Modell: ' + data.model, 'green');
+        } else {
+            showStatus('Verbindung fehlgeschlagen. Bitte zuerst Provider speichern.', 'red');
+        }
+    }
+    function showStatus(msg, color) {
+        const el = document.getElementById('llm-status');
+        el.textContent = msg;
+        el.className = 'text-sm p-2 rounded ' + (color === 'green' ? 'bg-green-100 text-green-800' : color === 'red' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600');
+        el.classList.remove('hidden');
+    }
+</script>
+{% endblock %}
