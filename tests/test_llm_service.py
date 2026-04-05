@@ -1,7 +1,5 @@
 """Tests for LLM Service (Claude SDK + OpenRouter) — STORY-087, 088."""
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 
 def test_llm_service_anthropic_chat():

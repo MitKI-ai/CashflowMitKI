@@ -1,7 +1,7 @@
 import hashlib
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -122,8 +122,8 @@ def confirm_import(
             created_transactions += 1
 
         elif entry.action == "standing_order":
-            from app.models.standing_order import StandingOrder
             from app.models.account import Account
+            from app.models.standing_order import StandingOrder
             acc = db.query(Account).filter(Account.tenant_id == tenant_id).first()
             so = StandingOrder(
                 tenant_id=tenant_id, created_by_id=current_user.id,
@@ -138,8 +138,8 @@ def confirm_import(
             created_standing_orders += 1
 
         elif entry.action == "direct_debit":
-            from app.models.direct_debit import DirectDebit
             from app.models.account import Account
+            from app.models.direct_debit import DirectDebit
             acc = db.query(Account).filter(Account.tenant_id == tenant_id).first()
             dd = DirectDebit(
                 tenant_id=tenant_id, created_by_id=current_user.id,

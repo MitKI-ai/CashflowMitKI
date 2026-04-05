@@ -1,6 +1,4 @@
 """Tests for STORY-016: Logo SVG + Session Secure Flag + Image size validation"""
-import io
-import os
 
 
 # ── Logo / branding ──────────────────────────────────────────────────────────

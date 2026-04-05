@@ -1,13 +1,12 @@
 """User Management API — STORY-027"""
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user, get_current_tenant_id, require_role
+from app.dependencies import get_current_tenant_id, require_role
 from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -25,9 +24,9 @@ class UserResponse(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    role: Optional[str] = None
-    is_active: Optional[bool] = None
-    display_name: Optional[str] = None
+    role: str | None = None
+    is_active: bool | None = None
+    display_name: str | None = None
 
 
 @router.get("/", response_model=list[UserResponse])

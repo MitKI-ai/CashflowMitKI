@@ -1,5 +1,5 @@
 """Tests for NocoDB Icon Integration — STORY-040"""
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 def test_icon_service_falls_back_to_static_when_nocodb_unavailable():

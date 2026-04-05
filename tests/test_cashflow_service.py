@@ -10,7 +10,6 @@ monthly cashflow summary:
 """
 import pytest
 
-
 # ── Cashflow Summary API ─────────────────────────────────────────────
 
 def test_cashflow_summary_empty(auth_client):

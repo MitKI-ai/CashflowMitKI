@@ -2,7 +2,7 @@
 import hashlib
 import hmac
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 def _endpoint_payload(**kwargs):

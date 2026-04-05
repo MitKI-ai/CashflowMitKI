@@ -1,5 +1,4 @@
 """Tests for Admin Analytics Dashboard MRR+Churn — STORY-036"""
-from datetime import date, timedelta
 from tests.conftest import make_subscription
 
 

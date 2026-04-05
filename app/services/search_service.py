@@ -4,6 +4,7 @@ Uses SQLite FTS5 virtual table. Isolated here so PostgreSQL migration
 only requires changes in this single file.
 """
 import logging
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 

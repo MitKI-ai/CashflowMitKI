@@ -1,5 +1,4 @@
 """Tests for Transaction CRUD API — STORY-061 (Haushaltsbuch)."""
-from datetime import date
 
 
 def test_list_transactions_empty(auth_client):

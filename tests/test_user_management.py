@@ -1,5 +1,4 @@
 """Tests for User Management — STORY-027"""
-from tests.conftest import make_subscription
 
 
 def test_list_users_admin(auth_client, admin_user, regular_user):

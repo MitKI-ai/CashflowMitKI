@@ -5,8 +5,6 @@ Auth: reads Bearer token or session cookie via FastAPI dependency.
 """
 from __future__ import annotations
 
-from typing import Optional
-
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 from strawberry.types import Info
@@ -15,8 +13,6 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.plan import Plan as PlanModel
 from app.models.subscription import Subscription as SubscriptionModel
-from app.models.user import User
-
 
 # ── GraphQL Types ──────────────────────────────────────────────────────────────
 
@@ -30,8 +26,8 @@ class SubscriptionType:
     billing_cycle: str
     status: str
     auto_renew: bool
-    notes: Optional[str]
-    icon_id: Optional[str]
+    notes: str | None
+    icon_id: str | None
 
 
 @strawberry.type
@@ -75,7 +71,7 @@ class Query:
         ]
 
     @strawberry.field
-    def subscription(self, info: Info, id: str) -> Optional[SubscriptionType]:
+    def subscription(self, info: Info, id: str) -> SubscriptionType | None:
         user, db = _get_user_and_db(info)
         s = db.query(SubscriptionModel).filter(
             SubscriptionModel.id == id,
@@ -117,7 +113,7 @@ class Mutation:
         billing_cycle: str,
         provider: str = "",
         currency: str = "EUR",
-        notes: Optional[str] = None,
+        notes: str | None = None,
     ) -> SubscriptionType:
         from datetime import date
         user, db = _get_user_and_db(info)

@@ -6,7 +6,6 @@ No binary OS dependencies — ReportLab is pure Python.
 from __future__ import annotations
 
 import io
-from calendar import month_name
 from datetime import date
 from typing import Any
 

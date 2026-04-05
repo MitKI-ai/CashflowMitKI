@@ -2,7 +2,6 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, model_validator
 
-
 FREQUENCY_MONTHLY_FACTOR = {
     "monthly": 1.0,
     "biweekly": 26 / 12,  # ~2.17

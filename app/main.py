@@ -14,7 +14,8 @@ from app.core.i18n import get_translator
 from app.core.logging import configure_logging, get_logger
 from app.database import Base, engine
 from app.graphql.schema import graphql_router
-from app.web.routes.pages import router as web_router, templates
+from app.web.routes.pages import router as web_router
+from app.web.routes.pages import templates
 
 configure_logging()
 logger = get_logger(__name__)

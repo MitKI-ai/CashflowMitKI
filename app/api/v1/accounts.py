@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from starlette.responses import Response
 from sqlalchemy.orm import Session
+from starlette.responses import Response
 
 from app.database import get_db
 from app.dependencies import get_current_tenant_id, get_current_user

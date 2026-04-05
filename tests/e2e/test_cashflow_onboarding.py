@@ -34,35 +34,35 @@ def test_onboarding_full_wizard_flow(page: Page, base_url: str):
     page.fill("input[name='bank_name']", "Testbank")
     page.fill("input[name='balance']", "5000")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step2", timeout=5000)
+    page.wait_for_url("**/step2", timeout=5000)
 
     # Step 2: Daueraufträge
     expect(page.locator("body")).to_contain_text("Dauerauftr")
     page.fill("input[name='gehalt_amount']", "4500")
     page.fill("input[name='miete_amount']", "1200")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step3", timeout=5000)
+    page.wait_for_url("**/step3", timeout=5000)
 
     # Step 3: Lastschriften
     expect(page.locator("body")).to_contain_text("Lastschrift")
     page.fill("input[name='strom_amount']", "85")
     page.fill("input[name='internet_amount']", "45")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step4", timeout=5000)
+    page.wait_for_url("**/step4", timeout=5000)
 
     # Step 4: Geldanlagen
     expect(page.locator("body")).to_contain_text("Geldanlage")
     page.fill("input[name='etf_value']", "15000")
     page.fill("input[name='etf_invested']", "12000")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step5", timeout=5000)
+    page.wait_for_url("**/step5", timeout=5000)
 
     # Step 5: Sparziele
     expect(page.locator("body")).to_contain_text("Sparziel")
     page.fill("input[name='notgroschen_target']", "10000")
     page.fill("input[name='notgroschen_current']", "3000")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step6", timeout=5000)
+    page.wait_for_url("**/step6", timeout=5000)
 
     # Step 6: Übersicht
     expect(page.locator("body")).to_contain_text("bersicht")
@@ -90,7 +90,7 @@ def test_onboarding_back_navigation(page: Page, base_url: str):
     back_link = page.locator("a[href='/cashflow-onboarding/step2']")
     expect(back_link).to_be_visible()
     back_link.click()
-    page.wait_for_url(f"**/step2", timeout=5000)
+    page.wait_for_url("**/step2", timeout=5000)
 
 
 def test_onboarding_step4_skippable(page: Page, base_url: str):
@@ -98,4 +98,4 @@ def test_onboarding_step4_skippable(page: Page, base_url: str):
     _login(page, base_url)
     page.goto(f"{base_url}/cashflow-onboarding/step4")
     page.click("button[type='submit']")
-    page.wait_for_url(f"**/step5", timeout=5000)
+    page.wait_for_url("**/step5", timeout=5000)

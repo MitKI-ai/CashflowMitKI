@@ -1,8 +1,6 @@
 """Tests for Chat Tool Definitions + Chat API — STORY-090, 091."""
 from unittest.mock import patch
 
-import pytest
-
 
 def test_tool_definitions_endpoint(auth_client):
     """List all available tool definitions."""

@@ -1,7 +1,6 @@
 """Tests for Retirement Profile + Calculator — STORY-064."""
 import pytest
 
-
 # ── Retirement Profile CRUD ──────────────────────────────────────────
 
 def test_get_retirement_profile_default(auth_client):

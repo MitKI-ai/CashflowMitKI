@@ -1,7 +1,5 @@
 """Tests for CSV Import + Export — STORY-032 / STORY-033"""
 import io
-import json
-
 
 # ── CSV Export ────────────────────────────────────────────────────────────────
 

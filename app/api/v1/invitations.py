@@ -1,18 +1,17 @@
 """Team Invitations API — STORY-026"""
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
-from app.config import settings
-from app.database import get_db
-from app.dependencies import get_current_user, get_current_tenant_id, require_role
-from app.models.invitation import Invitation
-from app.models.user import User
-from app.models.tenant import Tenant
-from app.services.email_service import EmailService
 from app.core.security import hash_password
+from app.database import get_db
+from app.dependencies import get_current_tenant_id, require_role
+from app.models.invitation import Invitation
+from app.models.tenant import Tenant
+from app.models.user import User
+from app.services.email_service import EmailService
 
 router = APIRouter(prefix="/invitations", tags=["invitations"])
 
@@ -100,7 +99,7 @@ def accept_invitation(
         raise HTTPException(status_code=404, detail="Invitation not found")
     if inv.status != "pending":
         raise HTTPException(status_code=410, detail="Invitation already used or revoked")
-    if inv.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+    if inv.expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
         inv.status = "expired"
         db.commit()
         raise HTTPException(status_code=410, detail="Invitation expired")

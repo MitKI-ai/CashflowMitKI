@@ -10,16 +10,16 @@ from app.config import settings
 from app.core.security import hash_password, verify_password
 from app.database import get_db
 from app.models.account import Account
-from app.models.category import Category
 from app.models.budget_alert import BudgetAlert
+from app.models.category import Category
 from app.models.direct_debit import DirectDebit
 from app.models.investment import Investment
 from app.models.retirement_profile import RetirementProfile
 from app.models.savings_goal import SavingsGoal
 from app.models.standing_order import StandingOrder
 from app.models.subscription import Subscription
-from app.models.transaction import Transaction
 from app.models.tenant import Tenant
+from app.models.transaction import Transaction
 from app.models.user import User
 from app.services.audit_service import AuditService
 from app.services.cashflow import CashflowService
@@ -587,7 +587,8 @@ def search_page(request: Request, q: str = "", db: Session = Depends(get_db)):
     user = _get_user(request, db)
     if not user:
         return RedirectResponse("/login", status_code=302)
-    from app.services.search_service import init_fts, search as fts_search
+    from app.services.search_service import init_fts
+    from app.services.search_service import search as fts_search
     init_fts(db)
     results = fts_search(db, user.tenant_id, q) if q else []
     return templates.TemplateResponse(

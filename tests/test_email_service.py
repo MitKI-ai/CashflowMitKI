@@ -1,11 +1,8 @@
 """Tests for EmailService — STORY-022"""
-from unittest.mock import MagicMock, patch
 from datetime import date
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from tests.conftest import make_subscription
-
 
 # ── EmailService unit tests ────────────────────────────────────────────────────
 

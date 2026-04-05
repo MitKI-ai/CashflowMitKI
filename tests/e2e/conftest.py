@@ -19,6 +19,7 @@ WICHTIG zu Datenbankisolation:
 import os
 import threading
 import time
+
 import pytest
 import uvicorn
 
@@ -60,14 +61,16 @@ def _seed_test_db():
     Legt Demo-Daten in die App-Datenbank — nutzt das engine der App,
     damit Server und Seed dieselbe Datei verwenden.
     """
+    from datetime import date
+
     from sqlalchemy.orm import Session
+
+    from app.core.security import hash_password
     from app.database import Base, engine  # ← App's eigenes engine
-    from app.models.tenant import Tenant
-    from app.models.user import User
     from app.models.plan import Plan
     from app.models.subscription import Subscription
-    from app.core.security import hash_password
-    from datetime import date
+    from app.models.tenant import Tenant
+    from app.models.user import User
 
     # Sauber neu starten
     Base.metadata.drop_all(bind=engine)

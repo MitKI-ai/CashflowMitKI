@@ -1,10 +1,7 @@
 """Tests for Internal API endpoints — STORY-025"""
 from datetime import date, timedelta
 
-import pytest
-
 from tests.conftest import make_subscription
-
 
 INTERNAL_KEY = "test-internal-key"  # matches conftest.py os.environ["INTERNAL_API_KEY"]
 

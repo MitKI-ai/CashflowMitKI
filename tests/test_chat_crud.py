@@ -1,6 +1,5 @@
 """Tests for Chat Entity CRUD — STORY-092, 093, 094."""
 from unittest.mock import patch
-import pytest
 
 
 def _setup_provider(auth_client):

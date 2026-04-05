@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_tenant_id, get_current_user
 from app.models.account import Account
-from app.models.direct_debit import DirectDebit
 from app.models.investment import Investment
 from app.models.savings_goal import SavingsGoal
 from app.models.standing_order import StandingOrder

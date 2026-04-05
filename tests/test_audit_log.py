@@ -1,7 +1,6 @@
 """Tests for STORY-019: Audit Log — write on CRUD + admin view"""
 from tests.conftest import make_subscription
 
-
 # ── Audit log written on subscription events ─────────────────────────────────
 
 def test_audit_log_on_subscription_create(auth_client, db, tenant_a, admin_user):

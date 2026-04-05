@@ -17,6 +17,8 @@ structlog
 PyJWT
 authlib
 strawberry-graphql[fastapi]
+anthropic
+openai
 pytest
 pytest-cov
 pytest-playwright

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user, get_current_tenant_id
+from app.dependencies import get_current_tenant_id, get_current_user
 from app.models.user import User
 from app.services.search_service import init_fts, search
 

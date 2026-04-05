@@ -244,9 +244,7 @@ def internal_send_reports(
     _: None = Depends(_require_internal_key),
 ):
     """Send PDF cashflow reports to all active admin users for the given month."""
-    import calendar as cal_mod
 
-    from app.services.report_service import ReportService
 
     month_label = f"{month:02d}/{year}"
     admins = db.query(User).filter(User.role == "admin", User.is_active == True).all()

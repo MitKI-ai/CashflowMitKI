@@ -1,5 +1,4 @@
 """Tests for Custom Fields — STORY-039"""
-import json
 
 
 def test_create_custom_field_schema(auth_client):
@@ -58,8 +57,9 @@ def test_subscription_stores_custom_field_values(auth_client):
 
 
 def test_custom_fields_in_subscription_response(auth_client, db, admin_user, tenant_a):
-    from tests.conftest import make_subscription
     import json as _json
+
+    from tests.conftest import make_subscription
     sub = make_subscription(db, tenant_a.id, admin_user.id,
                             name="Has Fields",
                             custom_fields_json=_json.dumps({"key": "value"}))

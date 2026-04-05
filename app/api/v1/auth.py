@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from sqlalchemy.orm import Session
@@ -19,8 +19,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 def fetch_google_profile(code: str) -> dict | None:  # pragma: no cover
     """Exchange Google auth code for user profile. Overridable in tests."""
-    from app.config import settings
     import httpx
+
+    from app.config import settings
     token_resp = httpx.post("https://oauth2.googleapis.com/token", data={
         "code": code,
         "client_id": settings.google_client_id,
@@ -42,8 +43,9 @@ def fetch_google_profile(code: str) -> dict | None:  # pragma: no cover
 
 def fetch_microsoft_profile(code: str) -> dict | None:  # pragma: no cover
     """Exchange Microsoft auth code for user profile. Overridable in tests."""
-    from app.config import settings
     import httpx
+
+    from app.config import settings
     token_resp = httpx.post(
         "https://login.microsoftonline.com/common/oauth2/v2.0/token",
         data={
@@ -113,7 +115,7 @@ def login(data: LoginRequest, request: Request, db: Session = Depends(get_db)):
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_at = datetime.now(UTC)
     db.commit()
 
     request.session["user_id"] = user.id

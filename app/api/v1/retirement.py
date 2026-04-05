@@ -5,7 +5,7 @@ from app.database import get_db
 from app.dependencies import get_current_tenant_id, get_current_user
 from app.models.retirement_profile import RetirementProfile
 from app.models.user import User
-from app.schemas.retirement import RetirementCalculation, RetirementProfileResponse, RetirementProfileUpdate
+from app.schemas.retirement import RetirementProfileResponse, RetirementProfileUpdate
 from app.services.retirement import RetirementService
 
 router = APIRouter(prefix="/retirement", tags=["retirement"])

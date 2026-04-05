@@ -1,9 +1,9 @@
 """Tests — PDF Finanzreport (EPIC-208 / Sprint 20)."""
+from datetime import date
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-
-from datetime import date
 
 from app.models.account import Account
 from app.models.investment import Investment
@@ -13,7 +13,6 @@ from app.models.tenant import Tenant
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.services.report_service import ReportService
-
 
 # ── Unit: ReportService ───────────────────────────────────────────────────────
 

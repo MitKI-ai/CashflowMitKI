@@ -1,6 +1,5 @@
 """Coupons API — STORY-038"""
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -19,8 +18,8 @@ class CouponCreate(BaseModel):
     code: str
     discount_type: str = "percent"
     discount_value: float
-    max_uses: Optional[int] = None
-    expires_at: Optional[datetime] = None
+    max_uses: int | None = None
+    expires_at: datetime | None = None
 
 
 class CouponResponse(BaseModel):
@@ -28,10 +27,10 @@ class CouponResponse(BaseModel):
     code: str
     discount_type: str
     discount_value: float
-    max_uses: Optional[int]
+    max_uses: int | None
     uses_count: int
     is_active: bool
-    expires_at: Optional[datetime]
+    expires_at: datetime | None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -107,8 +106,8 @@ def validate_coupon(
     ).first()
     if not c:
         return {"valid": False}
-    now = datetime.now(timezone.utc)
-    if c.expires_at and c.expires_at.replace(tzinfo=timezone.utc) < now:
+    now = datetime.now(UTC)
+    if c.expires_at and c.expires_at.replace(tzinfo=UTC) < now:
         return {"valid": False, "reason": "expired"}
     if c.max_uses and c.uses_count >= c.max_uses:
         return {"valid": False, "reason": "max_uses_reached"}
@@ -134,8 +133,8 @@ def apply_coupon(
     if not c:
         raise HTTPException(status_code=404, detail="Coupon not found or inactive")
 
-    now = datetime.now(timezone.utc)
-    if c.expires_at and c.expires_at.replace(tzinfo=timezone.utc) < now:
+    now = datetime.now(UTC)
+    if c.expires_at and c.expires_at.replace(tzinfo=UTC) < now:
         raise HTTPException(status_code=410, detail="Coupon expired")
 
     sub = db.query(Subscription).filter(

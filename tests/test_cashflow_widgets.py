@@ -1,7 +1,6 @@
 """Tests for STORY-062 (Schnell-Eingabe), STORY-068 (Monats-Summary), STORY-069 (Gesamtvermögen)."""
 import pytest
 
-
 # ── STORY-062: Quick Entry (POST to /transactions with minimal fields) ──────
 
 def test_quick_entry_expense(auth_client):

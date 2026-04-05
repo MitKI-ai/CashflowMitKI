@@ -10,7 +10,12 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP"]
-ignore = ["E501", "N806", "N802"]
+# E501: line-length (handled by formatter)
+# N806, N802: naming conventions
+# E712: SQLAlchemy filters need `== True/False` syntax, not `is True`
+# F821: SQLAlchemy relationship() string forward-refs are resolved at runtime
+# F841: some tests have intentional unused bindings for readability
+ignore = ["E501", "N806", "N802", "E712", "F821", "F841"]
 
 [tool.mypy]
 python_version = "3.12"

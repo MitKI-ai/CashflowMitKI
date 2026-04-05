@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from app.models.subscription import Subscription
 
-
 _CYCLE_MONTHLY_FACTOR = {
     "weekly": 4.33,
     "monthly": 1.0,

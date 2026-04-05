@@ -1,5 +1,4 @@
 """Tests for Cashflow Monthly Calendar — STORY-076."""
-import pytest
 
 
 def test_calendar_api_returns_days(auth_client):

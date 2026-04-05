@@ -1,5 +1,4 @@
 """Tests for LLM Provider Management — STORY-086."""
-import pytest
 
 
 def test_list_providers_empty(auth_client):
@@ -67,8 +66,8 @@ def test_api_key_decryptable(auth_client, db):
         "api_key": "sk-ant-decrypt-test",
         "model_id": "claude-sonnet-4-20250514",
     })
-    from app.models.llm_provider import LLMProvider
     from app.core.encryption import decrypt_api_key
+    from app.models.llm_provider import LLMProvider
     provider = db.query(LLMProvider).first()
     decrypted = decrypt_api_key(provider.api_key_encrypted)
     assert decrypted == "sk-ant-decrypt-test"

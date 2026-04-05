@@ -6,11 +6,10 @@ from sqlalchemy.orm import Session
 from app.models.account import Account
 from app.models.direct_debit import DirectDebit
 from app.models.standing_order import StandingOrder
-from app.models.transaction import Transaction
 from app.models.tenant import Tenant
+from app.models.transaction import Transaction
 from app.models.user import User
 from app.services.booking_service import BookingService, _fires_this_month
-
 
 # ── Unit: _fires_this_month ───────────────────────────────────────────────────
 

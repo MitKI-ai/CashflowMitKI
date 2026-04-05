@@ -1,6 +1,6 @@
 import secrets
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -18,4 +18,4 @@ class WebhookEndpoint(Base):
                                         default=lambda: secrets.token_hex(32))
     events: Mapped[str] = mapped_column(Text, default='["*"]')  # JSON list of event names
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))

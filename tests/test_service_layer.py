@@ -1,12 +1,9 @@
 """Tests for STORY-018: Service Layer — SubscriptionService + CategoryService"""
 from datetime import date
 
-import pytest
-
-from app.services.subscription_service import SubscriptionService
 from app.services.category_service import CategoryService
-from tests.conftest import make_subscription, make_category
-
+from app.services.subscription_service import SubscriptionService
+from tests.conftest import make_category, make_subscription
 
 # ── SubscriptionService ───────────────────────────────────────────────────────
 

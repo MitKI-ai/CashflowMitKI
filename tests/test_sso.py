@@ -1,5 +1,5 @@
 """Tests for SSO Google + Microsoft — STORY-043"""
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 
 def test_google_sso_redirect(client):

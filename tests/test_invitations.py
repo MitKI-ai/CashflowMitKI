@@ -1,7 +1,6 @@
 """Tests for Team Invitations — STORY-026"""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
-
 
 # ── Create invitation ──────────────────────────────────────────────────────────
 
@@ -61,8 +60,9 @@ def test_list_invitations_tenant_isolated(auth_client, auth_client_b):
 # ── Accept invitation ──────────────────────────────────────────────────────────
 
 def test_accept_invitation_creates_user(client, db, admin_user, tenant_a):
-    from app.models.invitation import Invitation
     import secrets
+
+    from app.models.invitation import Invitation
     token = secrets.token_urlsafe(32)
     inv = Invitation(
         tenant_id=tenant_a.id,
@@ -71,7 +71,7 @@ def test_accept_invitation_creates_user(client, db, admin_user, tenant_a):
         role="user",
         token=token,
         status="pending",
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=datetime.now(UTC) + timedelta(days=7),
     )
     db.add(inv)
     db.commit()
@@ -87,8 +87,9 @@ def test_accept_invitation_creates_user(client, db, admin_user, tenant_a):
 
 
 def test_accept_invitation_marks_accepted(client, db, admin_user, tenant_a):
-    from app.models.invitation import Invitation
     import secrets
+
+    from app.models.invitation import Invitation
     token = secrets.token_urlsafe(32)
     inv = Invitation(
         tenant_id=tenant_a.id,
@@ -97,7 +98,7 @@ def test_accept_invitation_marks_accepted(client, db, admin_user, tenant_a):
         role="user",
         token=token,
         status="pending",
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=datetime.now(UTC) + timedelta(days=7),
     )
     db.add(inv)
     db.commit()
@@ -110,8 +111,9 @@ def test_accept_invitation_marks_accepted(client, db, admin_user, tenant_a):
 
 
 def test_accept_expired_invitation_returns_410(client, db, admin_user, tenant_a):
-    from app.models.invitation import Invitation
     import secrets
+
+    from app.models.invitation import Invitation
     token = secrets.token_urlsafe(32)
     inv = Invitation(
         tenant_id=tenant_a.id,
@@ -120,7 +122,7 @@ def test_accept_expired_invitation_returns_410(client, db, admin_user, tenant_a)
         role="user",
         token=token,
         status="pending",
-        expires_at=datetime.now(timezone.utc) - timedelta(days=1),  # already expired
+        expires_at=datetime.now(UTC) - timedelta(days=1),  # already expired
     )
     db.add(inv)
     db.commit()

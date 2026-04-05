@@ -1,13 +1,13 @@
 """Tests for PostgreSQL Migration Validation — STORY-047"""
-import os
 
 
 def test_orm_models_use_standard_sqlalchemy_types():
     """All model columns use standard SQLAlchemy types (no SQLite-specific dialects)."""
+    from sqlalchemy import Boolean, Date, DateTime, Float, Integer, String, Text
+
     from app.models.subscription import Subscription
-    from app.models.user import User
     from app.models.tenant import Tenant
-    from sqlalchemy import String, Float, Boolean, Integer, Text, Date, DateTime
+    from app.models.user import User
     allowed = (String, Float, Boolean, Integer, Text, Date, DateTime)
     for model in (Subscription, User, Tenant):
         for col in model.__table__.columns:
@@ -18,7 +18,6 @@ def test_orm_models_use_standard_sqlalchemy_types():
 
 def test_search_service_is_isolated():
     """FTS5/SQLite-specific code is confined to search_service.py."""
-    import ast
     import pathlib
     search_path = pathlib.Path("app/services/search_service.py")
     assert search_path.exists()
@@ -44,19 +43,18 @@ def test_alembic_env_uses_settings_database_url():
 def test_database_url_can_be_overridden_via_env(monkeypatch):
     """DATABASE_URL env var overrides the default SQLite path."""
     monkeypatch.setenv("DATABASE_URL", "sqlite:///test_override.db")
-    from importlib import reload
-    import app.config as cfg_module
     # Just verify Settings accepts the override
-    from pydantic_settings import BaseSettings
+
+    import app.config as cfg_module
     assert hasattr(cfg_module.Settings, "model_fields") or hasattr(cfg_module.Settings, "__fields__")
 
 
 def test_psycopg2_importable_or_documented():
     """Either psycopg2 is available, or requirements.txt documents it."""
-    try:
-        import psycopg2
+    import importlib.util
+    if importlib.util.find_spec("psycopg2") is not None:
         assert True
-    except ImportError:
+    else:
         with open("requirements.txt") as f:
             content = f.read()
         # Should mention postgresql driver in requirements or CLAUDE.md

@@ -10,7 +10,6 @@ Zeigt die wichtigsten Playwright-Konzepte:
   - expect(locator)     → Assertions über sichtbare Elemente
   - page.screenshot()   → Screenshot speichern
 """
-import pytest
 from playwright.sync_api import Page, expect
 
 

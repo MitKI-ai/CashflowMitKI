@@ -1,5 +1,5 @@
 """Tests for Coupons + Rabattcodes — STORY-038"""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 
 def _coupon(**kwargs):
@@ -78,7 +78,7 @@ def test_validate_expired_coupon_returns_invalid(auth_client, db, admin_user, te
         code="EXPIRED",
         discount_type="percent",
         discount_value=5.0,
-        expires_at=datetime.now(timezone.utc) - timedelta(days=1),
+        expires_at=datetime.now(UTC) - timedelta(days=1),
     )
     db.add(c)
     db.commit()
@@ -91,7 +91,7 @@ def test_apply_coupon_percent_discount(auth_client, db, admin_user, tenant_a):
     from tests.conftest import make_subscription
     sub = make_subscription(db, tenant_a.id, admin_user.id, cost=100.0)
     auth_client.post("/api/v1/coupons/", json=_coupon(code="DISC10", discount_type="percent", discount_value=10))
-    r = auth_client.post(f"/api/v1/coupons/apply", json={"code": "DISC10", "subscription_id": sub.id})
+    r = auth_client.post("/api/v1/coupons/apply", json={"code": "DISC10", "subscription_id": sub.id})
     assert r.status_code == 200
     assert abs(r.json()["new_cost"] - 90.0) < 0.01
 

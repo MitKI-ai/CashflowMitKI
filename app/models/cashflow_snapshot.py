@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -24,6 +24,6 @@ class CashflowSnapshot(Base):
     monthly_net: Mapped[float] = mapped_column(Float, default=0.0)
     net_worth: Mapped[float] = mapped_column(Float, default=0.0)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
     tenant: Mapped["Tenant"] = relationship("Tenant")

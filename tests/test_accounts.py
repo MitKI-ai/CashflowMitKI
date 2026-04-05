@@ -1,5 +1,4 @@
 """Tests for Account CRUD — STORY-054"""
-from tests.conftest import make_category
 
 
 def test_create_account(auth_client, tenant_a):

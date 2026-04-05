@@ -1,5 +1,4 @@
 """Tests for 3-Scenario Retirement Calculator — STORY-081."""
-import pytest
 
 
 def test_scenarios_endpoint(auth_client):

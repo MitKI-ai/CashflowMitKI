@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.core.encryption import decrypt_api_key, encrypt_api_key
 from app.database import get_db

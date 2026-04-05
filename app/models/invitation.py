@@ -1,9 +1,9 @@
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
@@ -20,6 +20,6 @@ class Invitation(Base):
                                        default=lambda: secrets.token_urlsafe(32))
     status: Mapped[str] = mapped_column(String(20), default="pending")  # pending, accepted, expired, revoked
     expires_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc) + timedelta(days=7)
+        DateTime, default=lambda: datetime.now(UTC) + timedelta(days=7)
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))

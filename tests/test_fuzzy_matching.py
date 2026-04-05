@@ -1,10 +1,6 @@
 """Tests for Fuzzy Matching + Batch Entity Creation + LLM Categorization — STORY-098, 099, 100, 101."""
 import io
-import hashlib
 from unittest.mock import patch
-
-import pytest
-
 
 # ── STORY-098: Fuzzy Matching ────────────────────────────────────────
 

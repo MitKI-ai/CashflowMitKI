@@ -10,13 +10,13 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password
 from app.database import Base, SessionLocal, engine, get_db
 from app.main import app
 from app.models.category import Category
 from app.models.subscription import Subscription
 from app.models.tenant import Tenant
 from app.models.user import User
-from app.core.security import hash_password
 
 
 @pytest.fixture(autouse=True)

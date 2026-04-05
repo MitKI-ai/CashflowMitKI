@@ -1,5 +1,4 @@
 """Tests for Dashboard Widget System — STORY-083, 084, 085."""
-import pytest
 
 
 # ── Widget Registry ──────────────────────────────────────────────────

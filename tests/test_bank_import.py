@@ -1,7 +1,5 @@
 """Tests for Bank Statement Import (CSV + PDF) — STORY-095, 096, 097."""
 import io
-import pytest
-
 
 # ── STORY-095: CSV Parser ────────────────────────────────────────────
 
