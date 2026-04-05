@@ -12,7 +12,7 @@ aiosmtplib
 email-validator
 alembic
 httpx
-# For PostgreSQL: psycopg2-binary
+psycopg2-binary
 structlog
 PyJWT
 authlib
