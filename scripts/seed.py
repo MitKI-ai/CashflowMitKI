@@ -8,14 +8,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.config import settings
 from app.core.security import hash_password
-from app.database import Base, SessionLocal, engine
+from app.database import SessionLocal
 from app.models.category import Category
 from app.models.plan import Plan
 from app.models.subscription import Subscription
 from app.models.tenant import Tenant
 from app.models.user import User
 
-Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
 # Check if data exists
